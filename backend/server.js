@@ -17,6 +17,9 @@ app.use('/api', gateway);
 const nlp = require('../src/services/nlpProcessor');
 const contextManager = require('../src/services/contextManager');
 const languageDetector = require('../src/services/languageDetector');
+const retrieval = require('../src/services/retrieval');
+const responseTemplates = require('../src/services/responseTemplates');
+const preferenceStore = require('../src/services/preferenceStore');
 
 // Cache layer
 class Cache {
@@ -54,15 +57,14 @@ class CampusChatbot {
       const intent = nlp.detectIntent(message).intent;
       const lang = languageDetector.detect(message);
       const session = contextManager.addMessage(userId, 'user', message, { intent, lang });
-      const knowledgeResponse = await nlp.generateResponse(message, {
-        userId,
-        intent,
-        lang,
-        history: session.history,
-        context: session.context
-      });
+      preferenceStore.record(userId, { intent, lang });
+
+      const kbMatches = retrieval.retrieve(message, intent);
+      let kbResponse = responseTemplates.format(intent, kbMatches.map(m => m.record));
+      kbResponse = await languageDetector.translate(kbResponse, lang);
       const apiResponse = await this.getCampusData(intent, message);
-      response = this.combineResponses(knowledgeResponse, apiResponse);
+      response = this.combineResponses(kbResponse, apiResponse);
+
       contextManager.updateContext(userId, { lastIntent: intent, lastLang: lang });
       contextManager.addMessage(userId, 'assistant', response, { intent, lang });
       await this.cache.set(cacheKey, response);

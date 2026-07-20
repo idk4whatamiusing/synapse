@@ -19,18 +19,25 @@ module.exports = {
 
   // Chatbot configuration
   chatbot: {
+    modelEndpoint: process.env.NLP_MODEL_ENDPOINT || 'http://localhost:8080',
     nlpModel: process.env.NLP_MODEL || 'llama2',
     maxTokens: parseInt(process.env.MAX_TOKENS) || 2048,
     temperature: parseFloat(process.env.TEMPERATURE) || 0.7,
     contextWindow: parseInt(process.env.CONTEXT_WINDOW) || 4096,
-    cacheTTL: parseInt(process.env.CACHE_TTL) || 300000
+    cacheTTL: parseInt(process.env.CACHE_TTL) || 300000,
+    maxHistory: parseInt(process.env.MAX_HISTORY) || 10,
+    sessionTTL: parseInt(process.env.SESSION_TTL) || 1800000,
+    defaultLanguage: process.env.DEFAULT_LANGUAGE || 'en',
+    supportedLanguages: (process.env.SUPPORTED_LANGUAGES || 'en,bn,hi').split(',')
   },
 
   // Teams integration
   teams: {
     appId: process.env.TEAMS_APP_ID,
     appPassword: process.env.TEAMS_APP_PASSWORD,
-    tenantId: process.env.TEAMS_TENANT_ID
+    tenantId: process.env.TEAMS_TENANT_ID,
+    webhookUrl: process.env.TEAMS_WEBHOOK_URL,
+    enabled: process.env.TEAMS_ENABLED === 'true'
   },
 
   // Database configuration

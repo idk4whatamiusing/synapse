@@ -2,12 +2,12 @@
   "name": "adamas-campus-chatbot",
   "version": "1.0.0",
   "description": "AI-powered campus chatbot for Adamas knowledge city",
-  "main": "src/index.js",
+  "main": "backend/server.js",
   "scripts": {
-    "start": "node src/index.js",
-    "dev": "nodemon src/index.js",
-    "test": "jest",
-    "lint": "eslint src/",
+    "start": "node backend/server.js",
+    "dev": "nodemon backend/server.js",
+    "test": "node --test",
+    "lint": "eslint src/ backend/ integrations/",
     "build": "webpack --mode production"
   },
   "keywords": [

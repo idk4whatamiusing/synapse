@@ -22,6 +22,9 @@ const responseTemplates = require('../src/services/responseTemplates');
 const preferenceStore = require('../src/services/preferenceStore');
 const feedbackStore = require('../src/services/feedbackStore');
 const auth = require('../src/middleware/auth');
+const logger = require('../src/services/logger');
+const metrics = require('../src/services/metrics');
+const improvementPipeline = require('../src/services/improvementPipeline');
 
 // Cache layer
 class Cache {
@@ -187,19 +190,27 @@ class CampusChatbot {
 const chatbot = new CampusChatbot();
 
 app.post('/chat', auth, async (req, res) => {
+  const start = Date.now();
+  metrics.inc('chat_requests');
   try {
     const { message, userId } = req.body;
 
     if (!message || !userId) {
+      metrics.inc('errors');
       return res.status(400).json({
         error: 'Message and userId are required'
       });
     }
 
     const response = await chatbot.handleMessage(message, userId);
+    metrics.recordIntent(response.userId ? 'served' : 'served');
+    metrics.recordLatency(Date.now() - start);
+    logger.info('chat', { userId, intent: contextManager.getContext(userId).lastIntent });
 
     res.json(response);
   } catch (error) {
+    metrics.inc('errors');
+    logger.error('chat_failed', { error: error.message });
     // 5.4 error recovery: never crash the chat; return safe message
     res.status(200).json({
       message: 'Something went wrong processing your request. Please try rephrasing or type "help".',
@@ -212,8 +223,23 @@ app.post('/chat', auth, async (req, res) => {
 app.post('/feedback', auth, (req, res) => {
   const { userId, message, rating, comment } = req.body;
   if (!userId) return res.status(400).json({ error: 'userId required' });
+  metrics.inc('feedback');
   const entry = feedbackStore.add({ userId, message, rating, comment });
   res.json({ ok: true, entry });
+});
+
+app.get('/metrics', (req, res) => {
+  res.json(metrics.snapshot());
+});
+
+// Admin dashboard (7.5): metrics + feedback summary in one view
+app.get('/admin/dashboard', (req, res) => {
+  res.json({
+    metrics: metrics.snapshot(),
+    feedback_summary: feedbackStore.summary(),
+    feedback_recent: feedbackStore.getRecent(10),
+    improvement_review: improvementPipeline.reviewItems(3)
+  });
 });
 
 app.get('/help', (req, res) => {

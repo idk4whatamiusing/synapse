@@ -20,6 +20,8 @@ const languageDetector = require('../src/services/languageDetector');
 const retrieval = require('../src/services/retrieval');
 const responseTemplates = require('../src/services/responseTemplates');
 const preferenceStore = require('../src/services/preferenceStore');
+const feedbackStore = require('../src/services/feedbackStore');
+const auth = require('../src/middleware/auth');
 
 // Cache layer
 class Cache {
@@ -63,7 +65,20 @@ class CampusChatbot {
       let kbResponse = responseTemplates.format(intent, kbMatches.map(m => m.record));
       kbResponse = await languageDetector.translate(kbResponse, lang);
       const apiResponse = await this.getCampusData(intent, message);
-      response = this.combineResponses(kbResponse, apiResponse);
+
+      const kbEmpty = !kbMatches.length;
+      const apiEmpty = !apiResponse || (typeof apiResponse === 'object' && apiResponse.error);
+      const intentConfidence = nlp.detectIntent(message).confidence;
+
+      if (kbEmpty && apiEmpty) {
+        if (intent === 'general' || intentConfidence < 0.3) {
+          response = this.outOfDomain(message);
+        } else {
+          response = this.clarify(intent);
+        }
+      } else {
+        response = this.combineResponses(kbResponse, apiResponse);
+      }
 
       contextManager.updateContext(userId, { lastIntent: intent, lastLang: lang });
       contextManager.addMessage(userId, 'assistant', response, { intent, lang });
@@ -151,11 +166,27 @@ class CampusChatbot {
     }
     return response;
   }
+
+  outOfDomain(message) {
+    return `I'm the Adamas Campus Assistant — I handle hostels, transport, academics, notices, and clubs. ` +
+      `I couldn't match "${message}" to campus info. Try asking about those topics, or type "help" for examples.`;
+  }
+
+  clarify(intent) {
+    const prompts = {
+      hostel: `Which hostel or room type are you looking for (boys/girls, AC/non-AC)?`,
+      transport: `What's your starting point and destination for the bus route?`,
+      academics: `Which school or department do you mean (e.g. Engineering, Management)?`,
+      notices: `Which notice category — academic, emergency, or event?`,
+      clubs: `What kind of club — technical, cultural, sports, or literary?`
+    };
+    return prompts[intent] || 'Could you share a bit more detail about your campus query?';
+  }
 }
 
 const chatbot = new CampusChatbot();
 
-app.post('/chat', async (req, res) => {
+app.post('/chat', auth, async (req, res) => {
   try {
     const { message, userId } = req.body;
 
@@ -169,10 +200,33 @@ app.post('/chat', async (req, res) => {
 
     res.json(response);
   } catch (error) {
-    res.status(500).json({
-      error: 'Internal server error'
+    // 5.4 error recovery: never crash the chat; return safe message
+    res.status(200).json({
+      message: 'Something went wrong processing your request. Please try rephrasing or type "help".',
+      timestamp: new Date().toISOString(),
+      error: true
     });
   }
+});
+
+app.post('/feedback', auth, (req, res) => {
+  const { userId, message, rating, comment } = req.body;
+  if (!userId) return res.status(400).json({ error: 'userId required' });
+  const entry = feedbackStore.add({ userId, message, rating, comment });
+  res.json({ ok: true, entry });
+});
+
+app.get('/help', (req, res) => {
+  res.json({
+    examples: [
+      'Tell me about boys hostels near the main gate',
+      'Bus route from campus to Kolkata station',
+      'Departments in the School of Engineering',
+      'Upcoming campus events',
+      'Technical clubs I can join'
+    ],
+    topics: ['hostel', 'transport', 'academics', 'notices', 'clubs']
+  });
 });
 
 app.get('/health', (req, res) => {

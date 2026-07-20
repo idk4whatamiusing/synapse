@@ -133,8 +133,8 @@ export default function Chat() {
           placeholder="Type your question..."
           style={{ flex: 1, padding: 8, borderRadius: 8, border: "1px solid #ccc" }}
         />
-        <button type="submit" disabled={busy}>
-          {busy ? "..." : "Send"}
+        <button type="submit" disabled={busy} aria-busy={busy} aria-label={busy ? "Sending message" : "Send message"}>
+          {busy ? "Sending…" : "Send"}
         </button>
       </form>
 

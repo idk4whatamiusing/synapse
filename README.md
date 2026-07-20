@@ -139,6 +139,31 @@ The chatbot can handle the following types of queries:
 - **Notices**: "Are there any campus alerts?" "Notice board items"
 - **Clubs**: "What computer science clubs are available?" "Club meetings"
 
+## Frontend
+
+Two client apps talk to the same backend API (`POST /chat`, `GET /help`, `POST /feedback`) using a Bearer token.
+
+### Web (`web/`) — Next.js (App Router, TypeScript)
+
+```bash
+cd web
+npm install
+cp .env.local.example .env.local   # set NEXT_PUBLIC_API_BASE / NEXT_PUBLIC_API_TOKEN
+npm run dev                        # http://localhost:3000 (Next dev)
+```
+
+Make sure the backend is running (default `http://localhost:3000`). If both run locally, point `NEXT_PUBLIC_API_BASE` at the backend and run the web app on a different port (`next dev -p 3001`).
+
+### Mobile (`mobile/`) — React Native (Expo, TypeScript)
+
+```bash
+cd mobile
+npm install
+npm start                          # Expo dev server; press i / a / w
+```
+
+API base and token are read from `app.json` → `expo.extra` (`apiBase`, `apiToken`). Both apps default to `http://localhost:3000` and token `dev-token`.
+
 ## Development
 
 ### Scripts

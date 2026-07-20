@@ -1,0 +1,14 @@
+{
+  "expo": {
+    "name": "Adamas Campus Assistant",
+    "slug": "adamas-mobile",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "extra": {
+      "apiBase": "http://localhost:3000",
+      "apiToken": "dev-token"
+    }
+  }
+}

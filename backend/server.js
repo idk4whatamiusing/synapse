@@ -1,19 +1,18 @@
-// src/index.js
+// backend/server.js - Main chatbot server
 const express = require('express');
 const axios = require('axios');
 require('dotenv').config();
+const config = require('../config');
+const gateway = require('./gateway');
+const hostelIntegration = require('../integrations/hostel');
+const transportIntegration = require('../integrations/transport');
+const academicsIntegration = require('../integrations/academics');
+const noticesIntegration = require('../integrations/notices');
+const clubsIntegration = require('../integrations/clubs');
 
 const app = express();
 app.use(express.json());
-
-// Campus API endpoints
-const CAMPUS_APIS = {
-  hostels: process.env.HOSTEL_API_URL || 'http://localhost:3001',
-  transport: process.env.TRANSPORT_API_URL || 'http://localhost:3002',
-  academics: process.env.ACADEMICS_API_URL || 'http://localhost:3003',
-  notices: process.env.NOTICES_API_URL || 'http://localhost:3004',
-  clubs: process.env.CLUBS_API_URL || 'http://localhost:3005'
-};
+app.use('/api', gateway);
 
 // NLP processing (simplified)
 class SimpleNLPProcessor {
@@ -113,8 +112,8 @@ class CampusChatbot {
 
   async fetchHostelData(query) {
     try {
-      const response = await axios.get(`${CAMPUS_APIS.hostels}/hostels/search?query=${encodeURIComponent(query)}`);
-      return response.data;
+      const result = await hostelIntegration.searchHostels(query);
+      return result.data || result;
     } catch (error) {
       return 'Hostel service temporarily unavailable. Please contact administration.';
     }
@@ -122,8 +121,8 @@ class CampusChatbot {
 
   async fetchTransportData(query) {
     try {
-      const response = await axios.get(`${CAMPUS_APIS.transport}/routes?query=${encodeURIComponent(query)}`);
-      return response.data;
+      const result = await transportIntegration.getRoutes(query);
+      return result.data || result;
     } catch (error) {
       return 'Transport service temporarily unavailable. Please check with transport office.';
     }
@@ -131,8 +130,8 @@ class CampusChatbot {
 
   async fetchAcademicData(query) {
     try {
-      const response = await axios.get(`${CAMPUS_APIS.academics}/departments?query=${encodeURIComponent(query)}`);
-      return response.data;
+      const result = await academicsIntegration.getDepartments(query);
+      return result.data || result;
     } catch (error) {
       return 'Academic service temporarily unavailable. Please contact your department.';
     }
@@ -140,8 +139,8 @@ class CampusChatbot {
 
   async fetchNotices(query) {
     try {
-      const response = await axios.get(`${CAMPUS_APIS.notices}/notices?query=${encodeURIComponent(query)}`);
-      return response.data;
+      const result = await noticesIntegration.getNotices(null, 10);
+      return result.data || result;
     } catch (error) {
       return 'Notice service temporarily unavailable. Please check campus notice board.';
     }
@@ -149,8 +148,8 @@ class CampusChatbot {
 
   async fetchClubs(query) {
     try {
-      const response = await axios.get(`${CAMPUS_APIS.clubs}/clubs?query=${encodeURIComponent(query)}`);
-      return response.data;
+      const result = await clubsIntegration.getClubs(null, null);
+      return result.data || result;
     } catch (error) {
       return 'Club service temporarily unavailable. Please contact clubs office.';
     }

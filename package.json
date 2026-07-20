@@ -1,0 +1,34 @@
+{
+  "name": "adamas-campus-chatbot",
+  "version": "1.0.0",
+  "description": "AI-powered campus chatbot for Adamas knowledge city",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js",
+    "test": "jest",
+    "lint": "eslint src/",
+    "build": "webpack --mode production"
+  },
+  "keywords": [
+    "chatbot",
+    "campus",
+    "ai",
+    "nlp",
+    "teams",
+    "adamas"
+  ],
+  "author": "Adamas Campus Team",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^1.18.1",
+    "dotenv": "^16.6.1",
+    "express": "^4.22.2",
+    "natural": "^6.12.0",
+    "node-fetch": "^3.3.2"
+  },
+  "devDependencies": {
+    "eslint": "^8.57.1",
+    "nodemon": "^3.1.14"
+  }
+}

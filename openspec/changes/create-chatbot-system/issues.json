@@ -1,0 +1,324 @@
+{
+  "overview": {
+    "title": "Create Chatbot System",
+    "description": "Campus chatbot to answer everything about Adamas campus (hostels, transport, notices, departments, clubs, facilities)",
+    "status": "planned",
+    "priority": "high",
+    "created": "2026-07-20",
+    "updated": "2026-07-20",
+    "githubRepo": "https://github.com/idk4whatamiusing/synapse.git"
+  },
+  "phases": [
+    {
+      "id": "setup",
+      "title": "Infrastructure Setup",
+      "description": "Install Node.js, dependencies, project structure, API gateways",
+      "githubIssue": "https://github.com/idk4whatamiusing/synapse/issues/new?labels=setup%2Cinfrastructure&title=Infrastructure+Setup+for+Chatbot&body=Setup+phase+for+Adamas+Chatbot+system.%0A%0APhase+1:%20Infrastructure+Setup%0A- Install+Node.js+and+dependencies%0A- Set+up+project+structure+with+separate+folders%0A- Configure+team+collaboration+and+deployment%0A- Set+up+API+gateways+and+integration+endpoints",
+      "tasks": [
+        {
+          "id": "1.1",
+          "title": "Install Node.js and dependencies",
+          "description": "Set up Node.js environment and install required packages",
+          "status": "pending",
+          "githubIssue": "https://github.com/idk4whatamiusing/synapse/issues/new?labels=setup%2Cdependencies&title=Install+Node.js+and+Dependencies&body=%3C%21--+Task+1.1+from+Adamas+Chatbot+setup+phase%3A+Install+Node.js+and+dependencies%3B%0A%0A- Set+up+Node.js+environment%0A- Install+required+packages+%28package.json+dependencies%29%0A- Verify+Node.js+installation+and+npm+version%0A%0A%3C%21--+Link+to+parent+issue%3A+https://github.com/idk4whatamiusing/synapse/issues/new?labels=setup%2Cinfrastructure&title=Infrastructure+Setup+for+Chatbot"
+        },
+        {
+          "id": "1.2",
+          "title": "Set up project structure",
+          "description": "Create separate folders for backend, integrations, and config",
+          "status": "pending",
+          "githubIssue": "https://github.com/idk4whatamiusing/synapse/issues/new?labels=setup%2Cstructure&title=Set+Up+Project+Structure&body=%3C%21--+Task+1.2+from+Adamas+Chatbot+setup+phase%3A+Project+structure%3B%0A%0A- Create+separate+folders:+backend%2C+integrations%2C+config%0A- Set+up+project+configuration%0A- Configure+directory+structure%0A%0A%3C%21--+Link+to+parent+issue%3A+https://github.com/idk4whatamiusing/synapse/issues/new?labels=setup%2Cinfrastructure&title=Infrastructure+Setup+for+Chatbot"
+        },
+        {
+          "id": "1.3",
+          "title": "Configure collaboration and deployment",
+          "description": "Set up GitHub workflows, CI/CD, and deployment configuration",
+          "status": "pending",
+          "githubIssue": "https://github.com/idk4whatamiusing/synapse/issues/new?labels=setup%2Cdeployment&title=Configure+Collaboration+and+Deployment&body=%3C%21--+Task+1.3+from+Adamas+Chatbot+setup+phase%3A+Configuration+and+deployment%3B%0A%0A- Set+up+GitHub+Actions+CI/CD+workflows%0A- Configure+deployment+pipelines%0A- Set+up+team+collaboration+tools%0A- Configure+environment+variables%0A%0A%3C%21--+Link+to+parent+issue%3A+https://github.com/idk4whatamiusing/synapse/issues/new?labels=setup%2Cinfrastructure&title=Infrastructure+Setup+for+Chatbot"
+        },
+        {
+          "id": "1.4",
+          "title": "Configure API gateways and integrations",
+          "description": "Set up endpoints for hostel, transport, notice system integrations",
+          "status": "pending",
+          "githubIssue": "https://github.com/idk4whatamiusing/synapse/issues/new?labels=setup%2Capi&title=Configure+API+Gateways+and+Integrations&body=%3C%21--+Task+1.4+from+Adamas+Chatbot+setup+phase%3A+API+gateways+and+integrations%3B%0A%0A- Configure+API+gateways+for+hostel%2C+transport%2C+notice+systems%0A- Set+up+integration+endpoints%0A- Configure+data+sync+between+systems%0A%0A%3C%21--+Link+to+parent+issue%3A+https://github.com/idk4whatamiusing/synapse/issues/new?labels=setup%2Cinfrastructure&title=Infrastructure+Setup+for+Chatbot"
+        }
+      ]
+    },
+    {
+      "id": "core-infrastructure",
+      "title": "Chatbot Infrastructure",
+      "description": "Implement NLP processing, Teams integration, and context management",
+      "githubIssue": "https://github.com/idk4whatamiusing/synapse/issues/new?labels=core%2Cinfrastructure&title=Chatbot+Infrastructure&body=Core+infrastructure+for+Adamas+Chatbot+system.%0A%0APhase+2:%20Chatbot+Infrastructure%0A- Implement+NLP+processing+layer+using+LLaMA2%0A- Create+intent+classification+system%0A- Build+conversation+context+management%0A- Implement+multi-language+detection%0A- Set+up+Teams+integration",
+      "tasks": [
+        {
+          "id": "2.1",
+          "title": "Implement NLP processing layer",
+          "description": "Integrate LLaMA2 (13B model) with LORA fine-tuning",
+          "status": "pending",
+          "githubIssue": "https://github.com/idk4whatamiusing/synapse/issues/new?labels=core%2Cnlp&title=Implement+NLP+Processing+Layer&body=%3C%21--+Task+2.1+from+Adamas+Chatbot+core+infrastructure%3A+NLP+processing%3B%0A%0A- Integrate+LLaMA2+13B+model+with+LoRA+fine-tuning%0A- Set+up+NLP+processing+pipeline%0A- Configure+model+parameters+for+campus+information%0A%0A%3C%21--+Link+to+parent+issue%3A+https://github.com/idk4whatamiusing/synapse/issues/new?labels=core%2Cinfrastructure&title=Chatbot+Infrastructure"
+        },
+        {
+          "id": "2.2",
+          "title": "Create intent classification system",
+          "description": "Build system to classify different campus query types",
+          "status": "pending",
+          "githubIssue": "https://github.com/idk4whatamiusing/synapse/issues/new?labels=core%2Cclassification&title=Create+Intent+Classification+System&body=%3C%21--+Task+2.2+from+Adamas+Chatbot+core+infrastructure%3A+Intent+classification%3B%0A%0A- Build+system+to+classify+campus+query+types%0A- Set+up+training+for+intent+recognition%0A- Configure+query+category+classification%0A%0A%3C%21--+Link+to+parent+issue%3A+https://github.com/idk4whatamiusing/synapse/issues/new?labels=core%2Cinfrastructure&title=Chatbot+Infrastructure"
+        },
+        {
+          "id": "2.3",
+          "title": "Build conversation context management",
+          "description": "Implement session tracking and conversation memory",
+          "status": "pending",
+          "githubIssue": "https://github.com/idk4whatamiusing/synapse/issues/new?labels=core%2Ccontext&title=Build+Conversation+Context+Management&body=%3C%21--+Task+2.3+from+Adamas+Chatbot+core+infrastructure%3A+Conversation+context%3B%0A%0A- Implement+session+tracking%0A- Build+conversation+memory+system%0A- Set+up+context+management+for+better+user+experience%0A%0A%3C%21--+Link+to+parent+issue%3A+https://github.com/idk4whatamiusing/synapse/issues/new?labels=core%2Cinfrastructure&title=Chatbot+Infrastructure"
+        },
+        {
+          "id": "2.4",
+          "title": "Implement multi-language detection",
+          "description": "Add language detection and translation support",
+          "status": "pending",
+          "githubIssue": "https://github.com/idk4whatamiusing/synapse/issues/new?labels=core%2Clanguage&title=Implement+Multi-Language+Detection&body=%3C%21--+Task+2.4+from+Adamas+Chatbot+core+infrastructure%3A+Multi-language+detection%3B%0A%0A- Add+language+detection+and+translation+support%0A- Configure+language+preference+system%0A- Set+up+multi-language+interface%0A%0A%3C%21--+Link+to+parent+issue%3A+https://github.com/idk4whatamiusing/synapse/issues/new?labels=core%2Cinfrastructure&title=Chatbot+Infrastructure"
+        },
+        {
+          "id": "2.5",
+          "title": "Set up Teams integration",
+          "description": "Configure Teams messaging platform integration",
+          "status": "pending",
+          "githubIssue": "https://github.com/idk4whatamiusing/synapse/issues/new?labels=core%2Cteams&title=Set+Up+Teams+Integration&body=%3C%21--+Task+2.5+from+Adamas+Chatbot+core+infrastructure%3A+Teams+integration%3B%0A%0A- Configure+Teams+messaging+platform+integration%0A- Set+up+bot+for+Teams+interface%0A- Configure+Teams+notifications+and+alerts%0A%0A%3C%21--+Link+to+parent+issue%3A+https://github.com/idk4whatamiusing/synapse/issues/new?labels=core%2Cinfrastructure&title=Chatbot+Infrastructure"
+        }
+      ]
+    },
+    {
+      "id": "domain-integrations",
+      "title": "Campus Domain Integrations",
+      "description": "Connect all campus systems for comprehensive campus information",
+      "githubIssue": "https://github.com/idk4whatamiusing/synapse/issues/new?labels=integration%2Cdomains&title=Campus+Domain+Integrations&body=Campus+domain+integrations+for+Adamas+Chatbot.%0A%0APhase+3:%20Domain+Specific+Integrations%0A- Hostel+system+integration%0A- Transport+system+integration%0A- Academic+departments+integration%0A- Club+and+extracurricular+integration%0A- Notice+and+announcements+integration",
+      "tasks": [
+        {
+          "id": "3.1",
+          "title": "Hostel system integration",
+          "description": "Set up real-time hostel availability queries",
+          "status": "pending",
+          "githubIssue": "https://github.com/idk4whatamiusing/synapse/issues/new?labels=integration%2Chostel&title=Hostel+System+Integration&body=%3C%21--+Task+3.1+from+Adamas+Chatbot+domain+integrations%3A+Hostel+integration%3B%0A%0A- Set+up+real-time+hostel+availability+queries%0A- Configure+hostel+system+API+integration%0A- Implement+hostel+data+retrieval+and+display%0A%0A%3C%21--+Link+to+parent+issue%3A+https://github.com/idk4whatamiusing/synapse/issues/new?labels=integration%2Cdomains&title=Campus+Domain+Integrations"
+        },
+        {
+          "id": "3.2",
+          "title": "Transport system integration",
+          "description": "Configure route and schedule information from transport system",
+          "status": "pending",
+          "githubIssue": "https://github.com/idk4whatamiusing/synapse/issues/new?labels=integration%2Ctransport&title=Transport+System+Integration&body=%3C%21--+Task+3.2+from+Adamas+Chatbot+domain+integrations%3A+Transport+integration%3B%0A%0A- Configure+route+and+schedule+information+from+transport+system%0A- Set+up+transport+API+integration%0A- Implement+transport+data+retrieval%0A%0A%3C%21--+Link+to+parent+issue%3A+https://github.com/idk4whatamiusing/synapse/issues/new?labels=integration%2Cdomains&title=Campus+Domain+Integrations"
+        },
+        {
+          "id": "3.3",
+          "title": "Academic departments integration",
+          "description": "Set up faculty and program information from departments",
+          "status": "pending",
+          "githubIssue": "https://github.com/idk4whatamiusing/synapse/issues/new?labels=integration%2Cacademic&title=Academic+Departments+Integration&body=%3C%21--+Task+3.3+from+Adamas+Chatbot+domain+integrations%3A+Academic+integration%3B%0A%0A- Set+up+faculty+and+program+information+from+departments%0A- Configure+academic+system+API+integration%0A- Implement+academic+data+retrieval%0A%0A%3C%21--+Link+to+parent+issue%3A+https://github.com/idk4whatamiusing/synapse/issues/new?labels=integration%2Cdomains&title=Campus+Domain+Integrations"
+        },
+        {
+          "id": "3.4",
+          "title": "Club and activities integration",
+          "description": "Configure club information and extracurricular activities",
+          "status": "pending",
+          "githubIssue": "https://github.com/idk4whatamiusing/synapse/issues/new?labels=integration%2Cclub&title=Club+and+Activities+Integration&body=%3C%21--+Task+3.4+from+Adamas+Chatbot+domain+integrations%3A+Club+integration%3B%0A%0A- Configure+club+information+and+extracurricular+activities%0A- Set+up+club+system+API+integration%0A- Implement+club+data+retrieval%0A%0A%3C%21--+Link+to+parent+issue%3A+https://github.com/idk4whatamiusing/synapse/issues/new?labels=integration%2Cdomains&title=Campus+Domain+Integrations"
+        },
+        {
+          "id": "3.5",
+          "title": "Notice and announcements integration",
+          "description": "Set up real-time notices and campus alerts",
+          "status": "pending",
+          "githubIssue": "https://github.com/idk4whatamiusing/synapse/issues/new?labels=integration%2Cnotice&title=Notice+and+Announcements+Integration&body=%3C%21--+Task+3.5+from+Adamas+Chatbot+domain+integrations%3A+Notice+integration%3B%0A%0A- Set+up+real-time+notices+and+campus+alerts%0A- Configure+notice+system+API+integration%0A- Implement+notice+data+retrieval%0A%0A%3C%21--+Link+to+parent+issue%3A+https://github.com/idk4whatamiusing/synapse/issues/new?labels=integration%2Cdomains&title=Campus+Domain+Integrations"
+        },
+        {
+          "id": "3.6",
+          "title": "Configuration management",
+          "description": "Create configuration for all campus system endpoints",
+          "status": "pending",
+          "githubIssue": "https://github.com/idk4whatamiusing/synapse/issues/new?labels=integration%2Cconfig&title=Configuration+Management&body=%3C%21--+Task+3.6+from+Adamas+Chatbot+domain+integrations%3A+Configuration+management%3B%0A%0A- Create+configuration+for+all+campus+system+endpoints%0A- Set+up+integration+configuration+management%0A- Configure+API+endpoints+and+authentication%0A%0A%3C%21--+Link+to+parent+issue%3A+https://github.com/idk4whatamiusing/synapse/issues/new?labels=integration%2Cdomains&title=Campus+Domain+Integrations"
+        }
+      ]
+    },
+    {
+      "id": "response-generation",
+      "title": "Response Generation and Knowledge Base",
+      "description": "Build systems for campus knowledge and intelligent responses",
+      "githubIssue": "https://github.com/idk4whatamiusing/synapse/issues/new?labels=response%2Ckbase&title=Response+Generation+and+Knowledge+Base&body=Response+generation+and+knowledge+base+for+Adamas+Chatbot.%0A%0APhase+4:%20Response+Generation+and+Knowledge+Base%0A- Create+campus+knowledge+base%0A- Implement+knowledge+retrieval+and+fuzzy+matching%0A- Build+response+template+system%0A- Implement+multi-language+response+generation%0A- Set+up+user+preference+learning",
+      "tasks": [
+        {
+          "id": "4.1",
+          "title": "Create campus knowledge base",
+          "description": "Build structured database of campus information",
+          "status": "pending",
+          "githubIssue": "https://github.com/idk4whatamiusing/synapse/issues/new?labels=response%2Ckbase&title=Create+Campus+Knowledge+Base&body=%3C%21--+Task+4.1+from+Adamas+Chatbot+response+generation%3A+Campus+knowledge+base%3B%0A%0A- Build+structured+database+of+campus+information%0A- Set+up+knowledge+base+structure%0A- Configure+campus+data+organization%0A%0A%3C%21--+Link+to+parent+issue%3A+https://github.com/idk4whatamiusing/synapse/issues/new?labels=response%2Ckbase&title=Response+Generation+and+Knowledge+Base"
+        },
+        {
+          "id": "4.2",
+          "title": "Implement knowledge retrieval system",
+          "description": "Set up fuzzy matching for campus query responses",
+          "status": "pending",
+          "githubIssue": "https://github.com/idk4whatamiusing/synapse/issues/new?labels=response%2Crretrieval&title=Implement+Knowledge+Retrieval+System&body=%3C%21--+Task+4.2+from+Adamas+Chatbot+response+generation%3A+Knowledge+retrieval%3B%0A%0A- Set+up+fuzzy+matching+for+campus+query+responses%0A- Configure+knowledge+retrieval+algorithm%0A- Implement+response+matching+system%0A%0A%3C%21--+Link+to+parent+issue%3A+https://github.com/idk4whatamiusing/synapse/issues/new?labels=response%2Ckbase&title=Response+Generation+and+Knowledge+Base"
+        },
+        {
+          "id": "4.3",
+          "title": "Build response template system",
+          "description": "Create consistent formatting templates for responses",
+          "status": "pending",
+          "githubIssue": "https://github.com/idk4whatamiusing/synapse/issues/new?labels=response%2Ctemplate&title=Build+Response+Template+System&body=%3C%21--+Task+4.3+from+Adamas+Chatbot+response+generation%3A+Response+template+system%3B%0A%0A- Create+consistent+formatting+templates+for+responses%0A- Set+up+response+template+structure%0A- Configure+response+formatting+rules%0A%0A%3C%21--+Link+to+parent+issue%3A+https://github.com/idk4whatamiusing/synapse/issues/new?labels=response%2Ckbase&title=Response+Generation+and+Knowledge+Base"
+        },
+        {
+          "id": "4.4",
+          "title": "Implement multi-language response generation",
+          "description": "Support responses in multiple languages",
+          "status": "pending",
+          "githubIssue": "https://github.com/idk4whatamiusing/synapse/issues/new?labels=response%2Clanguage&title=Implement+Multi-Language+Response+Generation&body=%3C%21--+Task+4.4+from+Adamas+Chatbot+response+generation%3A+Multi-language+response+generation%3B%0A%0A- Support+responses+in+multiple+languages%0A- Configure+language+response+generation%0A- Set+up+language+response+system%0A%0A%3C%21--+Link+to+parent+issue%3A+https://github.com/idk4whatamiusing/synapse/issues/new?labels=response%2Ckbase&title=Response+Generation+and+Knowledge+Base"
+        },
+        {
+          "id": "4.5",
+          "title": "Set up user preference learning",
+          "description": "Implement system to learn and personalize user preferences",
+          "status": "pending",
+          "githubIssue": "https://github.com/idk4whatamiusing/synapse/issues/new?labels=response%2Cpreference&title=Set+Up+User+Preference+Learning&body=%3C%21--+Task+4.5+from+Adamas+Chatbot+response+generation%3A+User+preference+learning%3B%0A%0A- Implement+system+to+learn+and+personalize+user+preferences%0A- Configure+user+preference+learning%0A- Set+up+personalized+response+system%0A%0A%3C%21--+Link+to+parent+issue%3A+https://github.com/idk4whatamiusing/synapse/issues/new?labels=response%2Ckbase&title=Response+Generation+and+Knowledge+Base"
+        }
+      ]
+    },
+    {
+      "id": "user-experience",
+      "title": "User Experience and Support",
+      "description": "Build user-friendly chatbot with robust error handling and support",
+      "githubIssue": "https://github.com/idk4whatamiusing/synapse/issues/new?labels=ux%2Csupport&title=User+Experience+and+Support&body=User+experience+and+support+for+Adamas+Chatbot.%0A%0APhase+5:%20User+Experience+and+Support%0A- Implement+user+authentication+and+session+management%0A- Create+fallback+mechanism+for+out-of-domain+queries%0A- Build+contextual+help+and+clarification+system%0A- Implement+conversation+recovery+and+error+handling%0A- Add+user+feedback+collection+system",
+      "tasks": [
+        {
+          "id": "5.1",
+          "title": "Implement user authentication",
+          "description": "Add user login and session management",
+          "status": "pending",
+          "githubIssue": "https://github.com/idk4whatamiusing/synapse/issues/new?labels=ux%2Cauth&title=Implement+User+Authentication&body=%3C%21--+Task+5.1+from+Adamas+Chatbot+user+experience%3A+User+authentication%3B%0A%0A- Add+user+login+and+session+management%0A- Configure+user+authentication+system%0A- Set+up+session+management%0A%0A%3C%21--+Link+to+parent+issue%3A+https://github.com/idk4whatamiusing/synapse/issues/new?labels=ux%2Csupport&title=User+Experience+and+Support"
+        },
+        {
+          "id": "5.2",
+          "title": "Create fallback mechanism",
+          "description": "Handle queries outside chatbot domain gracefully",
+          "status": "pending",
+          "githubIssue": "https://github.com/idk4whatamiusing/synapse/issues/new?labels=ux%2Cfallback&title=Create+Fallback+Mechanism&body=%3C%21--+Task+5.2+from+Adamas+Chatbot+user+experience%3A+Fallback+mechanism%3B%0A%0A- Handle+queries+outside+chatbot+domain+gracefully%0A- Configure+fallback+response+system%0A- Set+up+out-of-domain+query+handling%0A%0A%3C%21--+Link+to+parent+issue%3A+https://github.com/idk4whatamiusing/synapse/issues/new?labels=ux%2Csupport&title=User+Experience+and+Support"
+        },
+        {
+          "id": "5.3",
+          "title": "Build contextual help system",
+          "description": "Add clarification and help functionality",
+          "status": "pending",
+          "githubIssue": "https://github.com/idk4whatamiusing/synapse/issues/new?labels=ux%2Chelp&title=Build+Contextual+Help+System&body=%3C%21--+Task+5.3+from+Adamas+Chatbot+user+experience%3A+Contextual+help+system%3B%0A%0A- Add+clarification+and+help+functionality%0A- Configure+contextual+help+system%0A- Set+up+help+support+for+users%0A%0A%3C%21--+Link+to+parent+issue%3A+https://github.com/idk4whatamiusing/synapse/issues/new?labels=ux%2Csupport&title=User+Experience+and+Support"
+        },
+        {
+          "id": "5.4",
+          "title": "Implement error handling",
+          "description": "Set up conversation recovery and error responses",
+          "status": "pending",
+          "githubIssue": "https://github.com/idk4whatamiusing/synapse/issues/new?labels=ux%2Cerror&title=Implement+Error+Handling&body=%3C%21--+Task+5.4+from+Adamas+Chatbot+user+experience%3A+Error+handling%3B%0A%0A- Set+up+conversation+recovery+and+error+responses%0A- Configure+error+handling+system%0A- Implement+conversation+recovery%0A%0A%3C%21--+Link+to+parent+issue%3A+https://github.com/idk4whatamiusing/synapse/issues/new?labels=ux%2Csupport&title=User+Experience+and+Support"
+        },
+        {
+          "id": "5.5",
+          "title": "Add feedback collection",
+          "description": "Implement system to collect user feedback",
+          "status": "pending",
+          "githubIssue": "https://github.com/idk4whatamiusing/synapse/issues/new?labels=ux%2Cfeedback&title=Add+Feedback+Collection&body=%3C%21--+Task+5.5+from+Adamas+Chatbot+user+experience%3A+Feedback+collection%3B%0A%0A- Implement+system+to+collect+user+feedback%0A- Configure+feedback+collection%0A- Set+up+feedback+system%0A%0A%3C%21--+Link+to+parent+issue%3A+https://github.com/idk4whatamiusing/synapse/issues/new?labels=ux%2Csupport&title=User+Experience+and+Support"
+        }
+      ]
+    },
+    {
+      "id": "testing",
+      "title": "Testing and Deployment",
+      "description": "Set up CI/CD pipeline and comprehensive testing",
+      "githubIssue": "https://github.com/idk4whatamiusing/synapse/issues/new?labels=test%2Cdeploy&title=Testing+and+Deployment&body=Testing+and+deployment+for+Adamas+Chatbot.%0A%0APhase+6:%20Testing+and+Deployment%0A- Create+unit+tests+for+NLP+and+intent+classification%0A- Set+up+integration+tests+for+all+campus+system+integrations%0A- Implement+performance+testing%0A- Configure+CI/CD+pipeline%0A- Set+up+monitoring+and+logging",
+      "tasks": [
+        {
+          "id": "6.1",
+          "title": "Create unit tests",
+          "description": "Write tests for NLP and intent classification",
+          "status": "pending",
+          "githubIssue": "https://github.com/idk4whatamiusing/synapse/issues/new?labels=test%2Cunit&title=Create+Unit+Tests&body=%3C%21--+Task+6.1+from+Adamas+Chatbot+testing%3A+Unit+tests%3B%0A%0A- Write+tests+for+NLP+and+intent+classification%0A- Configure+testing+framework%0A- Set+up+unit+test+coverage%0A%0A%3C%21--+Link+to+parent+issue%3A+https://github.com/idk4whatamiusing/synapse/issues/new?labels=test%2Cdeploy&title=Testing+and+Deployment"
+        },
+        {
+          "id": "6.2",
+          "title": "Set up integration tests",
+          "description": "Test all campus system integrations",
+          "status": "pending",
+          "githubIssue": "https://github.com/idk4whatamiusing/synapse/issues/new?labels=test%2Cintegration&title=Set+Up+Integration+Tests&body=%3C%21--+Task+6.2+from+Adamas+Chatbot+testing%3A+Integration+tests%3B%0A%0A- Test+all+campus+system+integrations%0A- Configure+integration+test+framework%0A- Set+up+integration+test+coverage%0A%0A%3C%21--+Link+to+parent+issue%3A+https://github.com/idk4whatamiusing/synapse/issues/new?labels=test%2Cdeploy&title=Testing+and+Deployment"
+        },
+        {
+          "id": "6.3",
+          "title": "Implement performance testing",
+          "description": "Test query response times and scalability",
+          "status": "pending",
+          "githubIssue": "https://github.com/idk4whatamiusing/synapse/issues/new?labels=test%2Cperformance&title=Implement+Performance+Testing&body=%3C%21--+Task+6.3+from+Adamas+Chatbot+testing%3A+Performance+testing%3B%0A%0A- Test+query+response+times+and+scalability%0A- Configure+performance+testing+framework%0A- Set+up+performance+metrics%0A%0A%3C%21--+Link+to+parent+issue%3A+https://github.com/idk4whatamiusing/synapse/issues/new?labels=test%2Cdeploy&title=Testing+and+Deployment"
+        },
+        {
+          "id": "6.4",
+          "title": "Configure CI/CD pipeline",
+          "description": "Set up automated testing and deployment",
+          "status": "pending",
+          "githubIssue": "https://github.com/idk4whatamiusing/synapse/issues/new?labels=test%2Cci%2Fcd&title=Configure+CI%2FCD+Pipeline&body=%3C%21--+Task+6.4+from+Adamas+Chatbot+testing%3A+CI%2FCD+pipeline%3B%0A%0A- Set+up+automated+testing+and+deployment%0A- Configure+CI%2FCD+workflows%0A- Set+up+deployment+automation%0A%0A%3C%21--+Link+to+parent+issue%3A+https://github.com/idk4whatamiusing/synapse/issues/new?labels=test%2Cdeploy&title=Testing+and+Deployment"
+        },
+        {
+          "id": "6.5",
+          "title": "Set up monitoring and logging",
+          "description": "Configure production monitoring and logging",
+          "status": "pending",
+          "githubIssue": "https://github.com/idk4whatamiusing/synapse/issues/new?labels=test%2Cmonitoring&title=Set+Up+Monitoring+and+Logging&body=%3C%21--+Task+6.5+from+Adamas+Chatbot+testing%3A+Monitoring+and+logging%3B%0A%0A- Configure+production+monitoring+and+logging%0A- Set+up+monitoring+framework%0A- Configure+logging+system%0A%0A%3C%21--+Link+to+parent+issue%3A+https://github.com/idk4whatamiusing/synapse/issues/new?labels=test%2Cdeploy&title=Testing+and+Deployment"
+        }
+      ]
+    },
+    {
+      "id": "analytics",
+      "title": "Analytics and Improvement",
+      "description": "Track usage and improve chatbot performance",
+      "githubIssue": "https://github.com/idk4whatamiusing/synapse/issues/new?labels=analytics%2Cimprovement&title=Analytics+and+Improvement&body=Analytics+and+improvement+for+Adamas+Chatbot.%0A%0APhase+7:%20Analytics+and+Improvement%0A- Implement+query+analytics+and+usage+tracking%0A- Set+up+model+performance+monitoring%0A- Collect+user+satisfaction+feedback%0A- Implement+model+improvement+pipeline%0A- Configure+reporting+dashboard",
+      "tasks": [
+        {
+          "id": "7.1",
+          "title": "Implement query analytics",
+          "description": "Track usage patterns and popular queries",
+          "status": "pending",
+          "githubIssue": "https://github.com/idk4whatamiusing/synapse/issues/new?labels=analytics%2Cqueries&title=Implement+Query+Analytics&body=%3C%21--+Task+7.1+from+Adamas+Chatbot+analytics%3A+Query+analytics%3B%0A%0A- Track+usage+patterns+and+popular+queries%0A- Configure+query+analytics+framework%0A- Set+up+query+analytics%0A%0A%3C%21--+Link+to+parent+issue%3A+https://github.com/idk4whatamiusing/synapse/issues/new?labels=analytics%2Cimprovement&title=Analytics+and+Improvement"
+        },
+        {
+          "id": "7.2",
+          "title": "Monitor model performance",
+          "description": "Track NLP model accuracy and response quality",
+          "status": "pending",
+          "githubIssue": "https://github.com/idk4whatamiusing/synapse/issues/new?labels=analytics%2Cmodel&title=Monitor+Model+Performance&body=%3C%21--+Task+7.2+from+Adamas+Chatbot+analytics%3A+Model+performance%3B%0A%0A- Track+NLP+model+accuracy+and+response+quality%0A- Configure+model+performance+monitoring%0A- Set+up+model+performance%0A%0A%3C%21--+Link+to+parent+issue%3A+https://github.com/idk4whatamiusing/synapse/issues/new?labels=analytics%2Cimprovement&title=Analytics+and+Improvement"
+        },
+        {
+          "id": "7.3",
+          "title": "Collect user satisfaction",
+          "description": "Set up feedback collection system",
+          "status": "pending",
+          "githubIssue": "https://github.com/idk4whatamiusing/synapse/issues/new?labels=analytics%2Csatisfaction&title=Collect+User+Satisfaction&body=%3C%21--+Task+7.3+from+Adamas+Chatbot+analytics%3A+User+satisfaction%3B%0A%0A- Set+up+feedback+collection+system%0A- Configure+user+satisfaction+collection%0A- Set+up+user+satisfaction%0A%0A%3C%21--+Link+to+parent+issue%3A+https://github.com/idk4whatamiusing/synapse/issues/new?labels=analytics%2Cimprovement&title=Analytics+and+Improvement"
+        },
+        {
+          "id": "7.4",
+          "title": "Implement model improvement pipeline",
+          "description": "Use feedback to continuously improve the model",
+          "status": "pending",
+          "githubIssue": "https://github.com/idk4whatamiusing/synapse/issues/new?labels=analytics%2Cimprovement&title=Implement+Model+Improvement+Pipeline&body=%3C%21--+Task+7.4+from+Adamas+Chatbot+analytics%3A+Model+improvement+pipeline%3B%0A%0A- Use+feedback+to+continuously+improve+the+model%0A- Configure+model+improvement+framework%0A- Set+up+model+improvement%0A%0A%3C%21--+Link+to+parent+issue%3A+https://github.com/idk4whatamiusing/synapse/issues/new?labels=analytics%2Cimprovement&title=Analytics+and+Improvement"
+        },
+        {
+          "id": "7.5",
+          "title": "Configure reporting dashboard",
+          "description": "Create admin dashboard for monitoring and analytics",
+          "status": "pending",
+          "githubIssue": "https://github.com/idk4whatamiusing/synapse/issues/new?labels=analytics%2Cdashboard&title=Configure+Reporting+Dashboard&body=%3C%21--+Task+7.5+from+Adamas+Chatbot+analytics%3A+Reporting+dashboard%3B%0A%0A- Create+admin+dashboard+for+monitoring+and+analytics%0A- Configure+dashboard+framework%0A- Set+up+dashboard%0A%0A%3C%21--+Link+to+parent+issue%3A+https://github.com/idk4whatamiusing/synapse/issues/new?labels=analytics%2Cimprovement&title=Analytics+and+Improvement"
+        }
+      ]
+    }
+  ],
+  "changeDetails": {
+    "name": "create-chatbot-system",
+    "proposal": "/Users/x/synapse/openspec/changes/create-chatbot-system/proposal.md",
+    "design": "/Users/x/synapse/openspec/changes/create-chatbot-system/design.md",
+    "specs": [
+      "/Users/x/synapse/openspec/changes/create-chatbot-system/specs/campus-chatbot/spec.md"
+    ],
+    "tasks": "/Users/x/synapse/openspec/changes/create-chatbot-system/tasks.md",
+    "stateFile": "/Users/x/synapse/openspec/changes/create-chatbot-system/issues.json"
+  }
+}

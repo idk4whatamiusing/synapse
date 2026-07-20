@@ -1,0 +1,63 @@
+# Dependencies
+node_modules/
+package-lock.json
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Build outputs
+coverage/
+build/
+dist/
+
+# Logs
+*.log
+logs/
+
+# IDE
+.vscode
+.idea
+*.sublime-project
+*.sublime-workspace
+
+# OS
+.DS_Store
+*.DS_Store?
+*_
+.Spotlight-V100
+.Zone.Identifier
+._hibernate
+
+# Editor
+.vscode/settings.json
+.vscode/tasks.json
+.vscode/launch.json
+.vscode/extensions.json
+.vscode/keybindings.json
+.vscode/snippets
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+
+# Logs and databases
+*.log
+*.sqlite
+*.db
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Node.js server logs
+server.log
+
+# Project specific
+.adamca

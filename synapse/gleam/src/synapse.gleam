@@ -11,6 +11,7 @@ import gleam/list
 import mist
 import synapse_pg as pg
 import data
+import deps
 
 //// erlang FFI: default dev Postgres pool config.
 @external(erlang, "synapse_pg_ffi", "default_pool_config")
@@ -41,10 +42,28 @@ pub fn route(path: String) -> Response(Body) {
   case path {
     "/" -> ok_response("ok")
     "/health" -> ok_response("ok")
+    "/health/deps" -> deps_response()
     "/schools" -> schools_response()
     _ ->
       response.new(404)
       |> response.set_body(mist.Bytes(bytes_tree.from_string("not found")))
+  }
+}
+
+fn deps_response() -> Response(Body) {
+  let s = deps.check_all()
+  let body =
+    "postgres="
+    <> s.postgres
+    <> " redis="
+    <> s.redis
+    <> " rabbitmq="
+    <> s.rabbitmq
+  case s.postgres == "ok" && s.redis == "ok" && s.rabbitmq == "ok" {
+    True -> ok_response(body)
+    False ->
+      response.new(503)
+      |> response.set_body(mist.Bytes(bytes_tree.from_string(body)))
   }
 }
 

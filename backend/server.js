@@ -14,32 +14,9 @@ const app = express();
 app.use(express.json());
 app.use('/api', gateway);
 
-// NLP processing (simplified)
-class SimpleNLPProcessor {
-  constructor() {
-    this.patterns = {
-      'hostel': /hostel|accommodation|room|available|live/i,
-      'transport': /transport|bus|route|schedule|arrival|departure/i,
-      'academics': /academic|department|course|professor|faculty|school/i,
-      'notices': /notice|announcement|alert|campus|urgent/i,
-      'clubs': /club|activity|group|event|meeting/i
-    };
-  }
-
-  detectIntent(message) {
-    const lowerMsg = message.toLowerCase();
-    for (const [intent, pattern] of Object.entries(this.patterns)) {
-      if (pattern.test(lowerMsg)) {
-        return intent;
-      }
-    }
-    return 'general';
-  }
-
-  generateResponse(intent, context) {
-    return `Based on your query about ${intent}, I can help you with campus information. Please provide more details about your specific need.`;
-  }
-}
+const nlp = require('../src/services/nlpProcessor');
+const contextManager = require('../src/services/contextManager');
+const languageDetector = require('../src/services/languageDetector');
 
 // Cache layer
 class Cache {
@@ -66,7 +43,6 @@ class Cache {
 
 class CampusChatbot {
   constructor() {
-    this.nlp = new SimpleNLPProcessor();
     this.cache = new Cache();
   }
 
@@ -75,10 +51,20 @@ class CampusChatbot {
     let response = await this.cache.get(cacheKey);
 
     if (!response) {
-      const intent = this.nlp.detectIntent(message);
-      const knowledgeResponse = this.nlp.generateResponse(intent, message);
+      const intent = nlp.detectIntent(message).intent;
+      const lang = languageDetector.detect(message);
+      const session = contextManager.addMessage(userId, 'user', message, { intent, lang });
+      const knowledgeResponse = await nlp.generateResponse(message, {
+        userId,
+        intent,
+        lang,
+        history: session.history,
+        context: session.context
+      });
       const apiResponse = await this.getCampusData(intent, message);
       response = this.combineResponses(knowledgeResponse, apiResponse);
+      contextManager.updateContext(userId, { lastIntent: intent, lastLang: lang });
+      contextManager.addMessage(userId, 'assistant', response, { intent, lang });
       await this.cache.set(cacheKey, response);
     }
 
@@ -158,7 +144,8 @@ class CampusChatbot {
   combineResponses(knowledge, api) {
     let response = knowledge;
     if (api && api !== knowledge) {
-      response += '\n\n' + api;
+      const apiText = typeof api === 'string' ? api : JSON.stringify(api, null, 2);
+      response += '\n\n' + apiText;
     }
     return response;
   }
@@ -190,6 +177,14 @@ app.get('/health', (req, res) => {
   res.json({
     status: 'healthy',
     timestamp: new Date().toISOString()
+  });
+});
+
+app.get('/context/:userId', (req, res) => {
+  const { userId } = req.params;
+  res.json({
+    context: contextManager.getContext(userId),
+    history: contextManager.getHistory(userId)
   });
 });
 

@@ -1,0 +1,20 @@
+# BMad global runtime symlink (points to user-level install) — do not commit
+_bmad
+
+# OpenCode session state
+.opencode
+
+# Gleam build artifacts
+**/build/
+**/erlang/
+
+# Node / RN (when added)
+node_modules/
+.expo/
+
+# Env / secrets
+.env
+*.local
+
+# OS
+.DS_Store

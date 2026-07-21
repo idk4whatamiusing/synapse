@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import {SafeAreaProvider, useSafeAreaInsets} from 'react-native-safe-area-context';
 
-const GATEWAY_URL = 'https://synapse-gateway.rz8m4crnwt.workers.dev';
+const GATEWAY_URL = 'http://18.60.43.29:8000';
 
 type Page = 'landing' | 'login';
 

@@ -26,9 +26,10 @@ command = "echo 'Cloudflare worker build ready'"
 ENVIRONMENT = "production"
 # Securely managed via wrangler secret commands
 
-# KV Configuration (for session storage, cache)
-[[kv_namespaces]]
-binding = "SESSION_KV"
+# KV Configuration (for session storage, cache) — uncomment when needed
+# [[kv_namespaces]]
+# binding = "SESSION_KV"
+# id = "YOUR_KV_NAMESPACE_ID"
 
 # Rate limiting
 [limits]

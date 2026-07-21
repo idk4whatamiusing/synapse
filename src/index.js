@@ -2,7 +2,7 @@
 // This worker routes requests between Cloudflare and the Gleam backend
 
 // Configuration from environment variables
-const BACKEND_URL = 'https://synapse-backend-production.up.railway.app'; // Replace with actual backend URL
+const BACKEND_URL = 'http://18.60.43.29:8000';
 const ENVIRONMENT = 'production';
 
 // Session management middleware

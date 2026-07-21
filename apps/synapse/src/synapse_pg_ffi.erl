@@ -12,12 +12,15 @@ env_get(Key, Default) ->
     Val -> Val
   end.
 
+env_get_list(Key, Default) ->
+  binary_to_list(env_get(Key, Default)).
+
 default_pool_config() ->
-  #{host => env_get("DB_HOST", "localhost"),
+  #{host => env_get_list("DB_HOST", "localhost"),
     port => list_to_integer(env_get("DB_PORT", "5432")),
-    user => env_get("DB_USER", "x"),
-    password => env_get("DB_PASSWORD", ""),
-    database => env_get("DB_NAME", "synapse"),
+    user => env_get_list("DB_USER", "x"),
+    password => env_get_list("DB_PASSWORD", ""),
+    database => env_get_list("DB_NAME", "synapse"),
     pool_size => 5}.
 
 start_pool(Name, Config) ->

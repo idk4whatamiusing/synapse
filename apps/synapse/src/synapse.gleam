@@ -18,6 +18,7 @@ import synapse_pg as pg
 import services/data
 import services/deps
 import services/identity.{type Red}
+import services/llm
 import services/messages
 
 @external(erlang, "synapse_thoas_ffi", "encode")
@@ -73,6 +74,7 @@ fn handle_request(req: Request(mist.Connection), session_red: Red) -> Response(B
     "/me" -> me_response(req, session_red)
     "/messages" if method == "POST" -> post_message_response(req, session_red)
     "/messages" -> list_messages_response(req, session_red)
+    "/chat" if method == "POST" -> chat_response(req, session_red)
     _ ->
       response.new(404)
       |> response.set_body(mist.Bytes(bytes_tree.from_string("not found")))
@@ -192,6 +194,56 @@ fn list_messages_response(
           }
         _ -> json_response(401, make_json([#("error", "invalid session")]))
       }
+  }
+}
+
+//// Story 3.1: LLM chat endpoint. POST /chat — send messages, get LLM response.
+fn chat_response(
+  req: Request(mist.Connection),
+  session_red: Red,
+) -> Response(Body) {
+  let cookie = request.get_header(req, "cookie")
+  case identity.session_from_cookie(option.from_result(cookie)) {
+    option.None -> json_response(401, make_json([#("error", "no session")]))
+    Some(id) ->
+      case identity.resolve_session(session_red, Some(id)) {
+        Ok(Some(_ctx)) ->
+          case mist.read_body(req, max_body_limit: 4096) {
+            Error(_) ->
+              json_response(400, make_json([#("error", "bad request body")]))
+            Ok(read_req) -> {
+              let body = bit_array.to_string(read_req.body) |> result.unwrap("")
+              case parse_chat_body(body) {
+                Error(reason) ->
+                  json_response(400, make_json([#("error", reason)]))
+                Ok(user_msg) -> {
+                  let messages = [llm.Message(role: "user", content: user_msg)]
+                  case llm.chat(llm.OpenRouter, messages) {
+                    Ok(response) ->
+                      json_response(200, make_json([#("response", response)]))
+                    Error(reason) ->
+                      json_response(502, make_json([#("error", reason)]))
+                  }
+                }
+              }
+            }
+          }
+        _ -> json_response(401, make_json([#("error", "invalid session")]))
+      }
+  }
+}
+
+fn parse_chat_body(body: String) -> Result(String, String) {
+  let trimmed = string.trim(body)
+  case string.contains(trimmed, "\"message\"") {
+    False -> Error("missing message field")
+    True -> {
+      let val = extract_json_string_value(trimmed, "message")
+      case val {
+        "" -> Error("empty message value")
+        v -> Ok(v)
+      }
+    }
   }
 }
 

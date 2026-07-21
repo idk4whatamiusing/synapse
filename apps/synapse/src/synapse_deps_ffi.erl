@@ -13,7 +13,9 @@
          redis_setex/4,
          redis_get/2,
          redis_del/2,
-         random_session_id/0]).
+         random_session_id/0,
+         getenv/1,
+         getenv_int/1]).
 
 %% Start a plain eredis connection. Returns {ok, Pid} or {error, Reason}.
 redis_pool_start(Host, Port) ->
@@ -71,4 +73,18 @@ rabbitmq_reachable(Host, Port) ->
       <<"ok">>;
     {error, Reason} ->
       iolist_to_binary(io_lib:format("error:~p", [Reason]))
+  end.
+
+%% Read an environment variable, returning "" if unset.
+getenv(Name) ->
+  case os:getenv(binary_to_list(Name)) of
+    false -> "";
+    Val -> list_to_binary(Val)
+  end.
+
+%% Read an environment variable as integer, returning Default if unset or invalid.
+getenv_int(Name) ->
+  case os:getenv(binary_to_list(Name)) of
+    false -> 0;
+    Val -> try list_to_integer(Val) catch _:_ -> 0 end
   end.

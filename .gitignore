@@ -11,6 +11,8 @@ _bmad
 # Node / RN (when added)
 node_modules/
 .expo/
+.wrangler/
+dist/
 
 # Env / secrets
 .env

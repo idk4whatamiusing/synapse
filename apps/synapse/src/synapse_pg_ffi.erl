@@ -5,12 +5,13 @@
 -module(synapse_pg_ffi).
 -export([start_pool/2, query_rows/2, query_rows_list/2, default_pool_config/0]).
 
-%% Default dev pool config (localhost:5432, db synapse, user x).
+%% Pool config from environment variables, falling back to dev defaults.
 default_pool_config() ->
-  #{host => "localhost",
-    port => 5432,
-    user => "x",
-    database => "synapse",
+  #{host => os:getenv("DB_HOST") orelse "localhost",
+    port => list_to_integer(os:getenv("DB_PORT") orelse "5432"),
+    user => os:getenv("DB_USER") orelse "x",
+    password => os:getenv("DB_PASSWORD") orelse "",
+    database => os:getenv("DB_NAME") orelse "synapse",
     pool_size => 5}.
 
 start_pool(Name, Config) ->

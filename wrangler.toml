@@ -1,0 +1,35 @@
+# wrangler.toml - Cloudflare Workers Gateway for Synapse
+# This worker acts as a reverse proxy and API gateway to the Gleam backend
+name = "synapse-gateway"
+main = "src/index.js"
+compatibility_date = "2024-01-01"
+workers_dev = true
+
+# Environment configuration
+[env.staging]
+vars = { ENVIRONMENT = "staging" }
+
+[env.production]
+vars = { ENVIRONMENT = "production" }
+
+# Route configuration (uncomment when custom domain is set up)
+# routes = [
+#   "synapse.adamas.edu/*",
+# ]
+
+# Build configuration
+[build]
+command = "echo 'Cloudflare worker build ready'"
+
+# Worker environment variables
+[vars]
+ENVIRONMENT = "production"
+# Securely managed via wrangler secret commands
+
+# KV Configuration (for session storage, cache)
+[[kv_namespaces]]
+binding = "SESSION_KV"
+
+# Rate limiting
+[limits]
+running_time = 30

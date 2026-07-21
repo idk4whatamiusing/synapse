@@ -1,0 +1,32 @@
+{
+  "name": "synapse",
+  "version": "1.0.0",
+  "description": "This repository contains the Cloudflare Workers setup for deploying the Synapse campus assistant backend and frontend. The Workers act as an API gateway, routing requests between Cloudflare and the Gleam backend.",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "deploy:staging": "wrangler deploy --env staging",
+    "deploy:production": "wrangler deploy --env production",
+    "tail": "wrangler tail",
+    "secrets": "wrangler secret list"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/idk4whatamiusing/synapse.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/idk4whatamiusing/synapse/issues"
+  },
+  "homepage": "https://github.com/idk4whatamiusing/synapse#readme",
+  "devDependencies": {
+    "wrangler": "^4.112.0"
+  }
+}

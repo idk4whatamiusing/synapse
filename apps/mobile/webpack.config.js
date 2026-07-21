@@ -24,7 +24,7 @@ module.exports = {
           options: {
             presets: [
               ['module:@react-native/babel-preset', {useTransformReactJSXExperimental: true}],
-              '@babel/preset-react',
+              ['@babel/preset-react', {runtime: 'automatic'}],
             ],
           },
         },

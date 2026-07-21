@@ -21,6 +21,12 @@ import services/identity.{type Red}
 import services/llm
 import services/messages
 
+@external(erlang, "synapse_deps_ffi", "getenv")
+fn getenv(name: String) -> String
+
+@external(erlang, "synapse_deps_ffi", "getenv_int")
+fn getenv_int(name: String) -> Int
+
 @external(erlang, "synapse_thoas_ffi", "encode")
 fn ffi_json_encode(term: Dynamic) -> String
 
@@ -39,11 +45,20 @@ pub fn main() {
   // ponytail: pgo's query/2 checks out the "default" pool; name it so.
   let _ = pg.start_pool("default", default_pool_config())
   // ponytail: Redis session store — plain eredis Pid, no named pool.
-  let assert Ok(session_red) = identity.start_redis("localhost", 6379)
+  let redis_host = case getenv("REDIS_HOST") {
+    "" -> "localhost"
+    h -> h
+  }
+  let redis_port = case getenv_int("REDIS_PORT") {
+    0 -> 6379
+    p -> p
+  }
+  let assert Ok(session_red) = identity.start_redis(redis_host, redis_port)
 
   let builder =
     mist.new(fn(req) { handle_request(req, session_red) })
     |> mist.port(8000)
+    |> mist.bind("0.0.0.0")
   let assert Ok(_) = mist.start(builder)
   process.sleep_forever()
 }

@@ -217,7 +217,8 @@ fn chat_response(
                 Error(reason) ->
                   json_response(400, make_json([#("error", reason)]))
                 Ok(user_msg) -> {
-                  case llm.chat_with_context(llm.OpenRouter, user_msg) {
+                  let messages = [llm.Message(role: "user", content: user_msg)]
+                  case llm.chat(llm.OpenRouter, messages) {
                     Ok(response) ->
                       json_response(200, make_json([#("response", response)]))
                     Error(reason) ->

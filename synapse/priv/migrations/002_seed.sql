@@ -68,4 +68,19 @@ BEGIN
     (s_socs,'BCOM','Bachelor of Commerce'),
     (s_sol,'BA','Bachelor of Arts'),
     (s_soa,'AGR','Agriculture');
+
+  -- ponytail: dev test accounts so login (Story 2.1) is verifiable end-to-end.
+  -- Plaintext credential is DEV ONLY — hash + salt before any real deploy.
+  INSERT INTO students (roll_number, name, school_id, department_id, year_id, credential)
+  VALUES
+    ('SOET/CSE/2024/001','Riya Sharma',
+       (SELECT id FROM schools WHERE code='SOET'),
+       (SELECT id FROM departments WHERE code='CSE'),
+       (SELECT id FROM years WHERE level=1),
+       'test123'),
+    ('SOMS/BBA/2023/042','Dev Patel',
+       (SELECT id FROM schools WHERE code='SOMS'),
+       (SELECT id FROM departments WHERE code='BBA'),
+       (SELECT id FROM years WHERE level=2),
+       'devpass');
 END $$;

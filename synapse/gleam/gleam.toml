@@ -8,6 +8,7 @@ gleam_otp = ">= 1.2.0 and < 2.0.0"
 gleam_http = ">= 4.0.0 and < 5.0.0"
 mist = "6.0.3"
 pgo = ">= 0.0.0 and < 2.0.0"
+thoas = ">= 1.0.0 and < 2.0.0"
 eredis = ">= 1.7.0 and < 2.0.0"
 
 [dev_dependencies]

@@ -6,21 +6,25 @@
 -export([start_pool/2, query_rows/2, query_rows_list/2, default_pool_config/0]).
 
 %% Pool config from environment variables, falling back to dev defaults.
-env_get(Key, Default) ->
+%% os:getenv returns charlists (Erlang strings), which pgo expects.
+env_charlist(Key, Default) ->
   case os:getenv(Key) of
     false -> Default;
     Val -> Val
   end.
 
-env_get_list(Key, Default) ->
-  binary_to_list(env_get(Key, Default)).
+env_int(Key, Default) ->
+  case os:getenv(Key) of
+    false -> Default;
+    Val -> list_to_integer(Val)
+  end.
 
 default_pool_config() ->
-  #{host => env_get_list("DB_HOST", "localhost"),
-    port => list_to_integer(env_get("DB_PORT", "5432")),
-    user => env_get_list("DB_USER", "x"),
-    password => env_get_list("DB_PASSWORD", ""),
-    database => env_get_list("DB_NAME", "synapse"),
+  #{host => env_charlist("DB_HOST", "localhost"),
+    port => env_int("DB_PORT", 5432),
+    user => env_charlist("DB_USER", "x"),
+    password => env_charlist("DB_PASSWORD", ""),
+    database => env_charlist("DB_NAME", "synapse"),
     pool_size => 5}.
 
 start_pool(Name, Config) ->

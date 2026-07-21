@@ -231,11 +231,11 @@ safe_json(Bin) when is_binary(Bin) ->
 safe_json(_) -> <<"">>.
 
 escape_json_chars(<<>>) -> [];
-escape_json_chars(<<$\", Rest/binary>>) -> [<<\"\\\"\">> | escape_json_chars(Rest)];
-escape_json_chars(<<$\\, Rest/binary>>) -> [<<"\\\\">> | escape_json_chars(Rest)];
-escape_json_chars(<<$\n, Rest/binary>>) -> [<<"\\n">> | escape_json_chars(Rest)];
-escape_json_chars(<<$\r, Rest/binary>>) -> [<<"\\r">> | escape_json_chars(Rest)];
-escape_json_chars(<<$\t, Rest/binary>>) -> [<<"\\t">> | escape_json_chars(Rest)];
+escape_json_chars(<<C, Rest/binary>>) when C =:= $\n -> [<<"\\n">> | escape_json_chars(Rest)];
+escape_json_chars(<<C, Rest/binary>>) when C =:= $\r -> [<<"\\r">> | escape_json_chars(Rest)];
+escape_json_chars(<<C, Rest/binary>>) when C =:= $\t -> [<<"\\t">> | escape_json_chars(Rest)];
+escape_json_chars(<<C, Rest/binary>>) when C =:= $\\ -> [<<"\\\\">> | escape_json_chars(Rest)];
+escape_json_chars(<<C, Rest/binary>>) when C =:= $" -> [<<"\\\"">> | escape_json_chars(Rest)];
 escape_json_chars(<<C, Rest/binary>>) -> [<<C>> | escape_json_chars(Rest)].
 
 %% URL-encode a string.

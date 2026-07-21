@@ -111,7 +111,7 @@ fn login_response(
         Error(reason) ->
           json_response(400, make_json([#("error", reason)]))
         Ok(#(roll, cred)) ->
-          case identity.login(session_red, roll, cred) {
+          case identity.portal_login(session_red, roll, cred) {
             identity.Rejected(reason) ->
               json_response(401, make_json([#("error", reason)]))
             identity.Authed(session_id, school, department, year) ->

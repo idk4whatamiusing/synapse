@@ -43,6 +43,19 @@ fn ffi_redis_del(pool: Red, key: String) -> Result(Nil, String)
 @external(erlang, "synapse_deps_ffi", "random_session_id")
 fn ffi_random_session_id() -> String
 
+@external(erlang, "services_adamas_ffi", "fetch_csrf_token")
+fn ffi_fetch_csrf_token() -> Result(String, String)
+
+@external(erlang, "services_adamas_ffi", "portal_login")
+fn ffi_portal_login(
+  token: String,
+  registration_no: String,
+  password: String,
+) -> Result(String, String)
+
+@external(erlang, "services_adamas_ffi", "fetch_student_info")
+fn ffi_fetch_student_info(session_cookie: String) -> Result(String, String)
+
 pub type LoginResult {
   Authed(session_id: String, school: String, department: String, year: String)
   Rejected(reason: String)
@@ -94,6 +107,51 @@ pub fn logout(pool: Red, session_id: String) -> Result(Nil, String) {
   ffi_redis_del(pool, session_key(session_id))
 }
 
+//// Portal-based login: authenticates against the Adamas student portal,
+//// fetches student info, upserts to local DB, and creates a Redis session.
+pub fn portal_login(
+  pool: Red,
+  registration_no: String,
+  password: String,
+) -> LoginResult {
+  // Step 1: Fetch CSRF token from login page
+  case ffi_fetch_csrf_token() {
+    Error(reason) -> Rejected("csrf fetch failed: " <> reason)
+    Ok(token) -> {
+      // Step 2: POST credentials to portal
+      case ffi_portal_login(token, registration_no, password) {
+        Error(reason) -> Rejected(reason)
+        Ok(session_cookie) -> {
+          // Step 3: Fetch student info from dashboard
+          case ffi_fetch_student_info(session_cookie) {
+            Error(reason) -> Rejected("could not fetch student info: " <> reason)
+            Ok(student_json) -> {
+              // Step 4: Parse student info and upsert to local DB
+              case parse_student_json(student_json) {
+                Error(reason) -> Rejected("could not parse student info: " <> reason)
+                Ok(info) -> {
+                  upsert_student(registration_no, info)
+                  // Step 5: Create Redis session
+                  let session_id = ffi_random_session_id()
+                  let payload =
+                    ffi_json_encode(
+                      ffi_session_json(session_id, info.school, info.department, info.year),
+                    )
+                  case ffi_redis_setex(pool, session_key(session_id), session_ttl_secs, payload) {
+                    Error(reason) -> Rejected("session store failed: " <> reason)
+                    Ok(Nil) ->
+                      Authed(session_id, info.school, info.department, info.year)
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
 //// Resolve a session cookie value into an auth context, or None.
 pub fn resolve_session(
   pool: Red,
@@ -140,29 +198,51 @@ fn find_session_cookie(parts: List(String)) -> Option(String) {
   }
 }
 
-//// Parse JSON login body -> {roll_number, credential}.
+//// Parse JSON login body -> {registration_no, password}.
+//// Accepts both "roll_number" and "registration_no" as the identifier field.
 pub fn parse_login_body(body: String) -> Result(#(String, String), String) {
   case ffi_json_decode(body) {
     Error(reason) -> Error(reason)
     Ok(term) -> {
+      // Try "registration_no" first (matches Adamas portal field name)
       case
         decode.run(
           term,
           decode.field(
-            "roll_number",
+            "registration_no",
             decode.string,
-            fn(roll) {
+            fn(reg) {
               decode.field(
-                "credential",
+                "password",
                 decode.string,
-                fn(cred) { decode.success(#(roll, cred)) },
+                fn(pass) { decode.success(#(reg, pass)) },
               )
             },
           ),
         )
       {
         Ok(#(r, c)) -> Ok(#(r, c))
-        Error(_) -> Error("missing roll_number or credential")
+        Error(_) ->
+          // Fall back to "roll_number" + "credential" (legacy format)
+          case
+            decode.run(
+              term,
+              decode.field(
+                "roll_number",
+                decode.string,
+                fn(roll) {
+                  decode.field(
+                    "credential",
+                    decode.string,
+                    fn(cred) { decode.success(#(roll, cred)) },
+                  )
+                },
+              ),
+            )
+          {
+            Ok(#(r, c)) -> Ok(#(r, c))
+            Error(_) -> Error("missing registration_no/roll_number or password/credential")
+          }
       }
     }
   }
@@ -233,4 +313,111 @@ fn decode_session(term: Dynamic) -> Result(AuthContext, List(decode.DecodeError)
 
 fn session_key(session_id: String) -> String {
   "synapse:session:" <> session_id
+}
+
+type StudentInfo {
+  StudentInfo(
+    name: String,
+    school: String,
+    department: String,
+    year: String,
+  )
+}
+
+//// Parse student info JSON string extracted from portal dashboard.
+fn parse_student_json(json: String) -> Result(StudentInfo, String) {
+  case ffi_json_decode(json) {
+    Error(reason) -> Error(reason)
+    Ok(term) -> {
+      case
+        decode.run(
+          term,
+          decode.field(
+            "name",
+            decode.string,
+            fn(name) {
+              decode.field(
+                "school",
+                decode.string,
+                fn(school) {
+                  decode.field(
+                    "department",
+                    decode.string,
+                    fn(department) {
+                      decode.field(
+                        "year",
+                        decode.string,
+                        fn(year) { decode.success(StudentInfo(name, school, department, year)) },
+                      )
+                    },
+                  )
+                },
+              )
+            },
+          ),
+        )
+      {
+        Ok(info) -> Ok(info)
+        Error(_) -> Error("could not decode student info")
+      }
+    }
+  }
+}
+
+//// Upsert student into local DB from portal data.
+fn upsert_student(registration_no: String, info: StudentInfo) -> Nil {
+  // Resolve school, department, year IDs from local lookup tables
+  let school_id = lookup_or_create_school(info.school)
+  let dept_id = lookup_or_create_department(info.department, school_id)
+  let year_id = lookup_or_create_year(info.year)
+  // Upsert student record
+  let sql =
+    "INSERT INTO students (roll_number, name, school_id, department_id, year_id, credential)
+       VALUES ($1, $2, $3, $4, $5, '')
+       ON CONFLICT (roll_number) DO UPDATE SET name = $2, school_id = $3, department_id = $4, year_id = $5"
+  let _ = pg.query_list(sql, [registration_no, info.name, school_id, dept_id, year_id])
+  Nil
+}
+
+fn lookup_or_create_school(code: String) -> String {
+  case pg.query_list("SELECT id FROM schools WHERE code = $1", [code]) {
+    pg.Rows([[id, ..], ..]) -> id
+    _ ->
+      case
+        pg.query_list(
+          "INSERT INTO schools (code, name) VALUES ($1, $2) RETURNING id",
+          [code, code],
+        )
+      {
+        pg.Rows([[id, ..], ..]) -> id
+        _ -> "1"
+      }
+  }
+}
+
+fn lookup_or_create_department(code: String, school_id: String) -> String {
+  case pg.query_list("SELECT id FROM departments WHERE code = $1 AND school_id = $2", [code, school_id]) {
+    pg.Rows([[id, ..], ..]) -> id
+    _ ->
+      case
+        pg.query_list(
+          "INSERT INTO departments (code, name, school_id) VALUES ($1, $2, $3) RETURNING id",
+          [code, code, school_id],
+        )
+      {
+        pg.Rows([[id, ..], ..]) -> id
+        _ -> "1"
+      }
+  }
+}
+
+fn lookup_or_create_year(level: String) -> String {
+  case pg.query_list("SELECT id FROM years WHERE level = $1", [level]) {
+    pg.Rows([[id, ..], ..]) -> id
+    _ ->
+      case pg.query_list("INSERT INTO years (level) VALUES ($1) RETURNING id", [level]) {
+        pg.Rows([[id, ..], ..]) -> id
+        _ -> "1"
+      }
+  }
 }

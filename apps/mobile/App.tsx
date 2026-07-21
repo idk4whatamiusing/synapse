@@ -166,24 +166,28 @@ function LoginPage({onBack}: {onBack: () => void}) {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [loggedIn, setLoggedIn] = useState(false);
+  const [sessionInfo, setSessionInfo] = useState<{school: string; department: string; year: string} | null>(null);
 
   const handleLogin = async () => {
     if (!rollNumber.trim()) {
-      setError('Roll number is required');
+      setError('Registration number is required');
       return;
     }
     setLoading(true);
     setError('');
     try {
-      const res = await fetch(`${GATEWAY_URL}/api/login`, {
+      const res = await fetch(`${GATEWAY_URL}/login`, {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({registration_number: rollNumber.trim(), credential: password}),
+        body: JSON.stringify({registration_no: rollNumber.trim(), password: password}),
       });
       const data = await res.json();
       if (res.ok) {
-        // TODO: store session, navigate to chat
-        setError('Login successful! (session storage coming soon)');
+        // Store session cookie
+        document.cookie = `synapse_session=${data.session_id}; path=/; max-age=604800`;
+        setSessionInfo({school: data.school, department: data.department, year: data.year});
+        setLoggedIn(true);
       } else {
         setError(data.error || 'Login failed');
       }
@@ -210,6 +214,23 @@ function LoginPage({onBack}: {onBack: () => void}) {
         {/* Login Card */}
         <View style={s.loginWrap}>
           <View style={[s.loginCard, {backgroundColor: card, borderColor: border}]}>
+            {loggedIn && sessionInfo ? (
+              <>
+                <Text style={[s.loginTitle, {color: '#22c55e'}]}>Logged in</Text>
+                <Text style={[s.loginDesc, {color: muted}]}>Welcome, {sessionInfo.school} — {sessionInfo.department}</Text>
+                <View style={{marginTop: 20, padding: 16, backgroundColor: inputBg, borderRadius: 10}}>
+                  <Text style={{color: text, fontSize: 14, marginBottom: 6}}>School: {sessionInfo.school}</Text>
+                  <Text style={{color: text, fontSize: 14, marginBottom: 6}}>Department: {sessionInfo.department}</Text>
+                  <Text style={{color: text, fontSize: 14}}>Year: {sessionInfo.year}</Text>
+                </View>
+                <TouchableOpacity
+                  onPress={() => { setLoggedIn(false); setSessionInfo(null); document.cookie = 'synapse_session=; max-age=0'; }}
+                  style={[s.loginBtn, {backgroundColor: '#ef4444', marginTop: 16}]}>
+                  <Text style={s.loginBtnText}>Logout</Text>
+                </TouchableOpacity>
+              </>
+            ) : (
+              <>
             <Text style={[s.loginTitle, {color: text}]}>Welcome back</Text>
             <Text style={[s.loginDesc, {color: muted}]}>Sign in with your registration number</Text>
 
@@ -255,6 +276,8 @@ function LoginPage({onBack}: {onBack: () => void}) {
               Don't have an account?{' '}
               <Text style={{color: accent, fontWeight: '600'}}>Contact your dept admin</Text>
             </Text>
+              </>
+            )}
           </View>
         </View>
       </ScrollView>

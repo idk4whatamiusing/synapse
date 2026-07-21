@@ -2,7 +2,7 @@
 %% decode returns {ok, Dynamic} or {error, binary}; encode takes Dynamic.
 
 -module(synapse_thoas_ffi).
--export([decode/1, encode/1, session_json/4, obj/1]).
+-export([decode/1, encode/1, encode_array/1, session_json/4, obj/1]).
 
 decode(Binary) when is_binary(Binary) ->
   case thoas:decode(Binary) of
@@ -11,7 +11,11 @@ decode(Binary) when is_binary(Binary) ->
   end.
 
 encode(Term) ->
-  thoas:encode(Term).
+  iolist_to_binary(thoas:encode(Term)).
+
+%% Encode a list of Dynamic terms as a JSON array.
+encode_array(Items) when is_list(Items) ->
+  iolist_to_binary(thoas:encode(Items)).
 
 %% Build a JSON object from string key/value pairs, as an opaque Dynamic term.
 obj(Entries) when is_list(Entries) ->

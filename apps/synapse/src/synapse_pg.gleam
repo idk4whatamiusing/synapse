@@ -11,6 +11,9 @@ fn ffi_start_pool(name: String, config: Dynamic) -> Dynamic
 @external(erlang, "synapse_pg_ffi", "query_rows")
 fn ffi_query_rows(sql: String, params: Dynamic) -> QueryResult
 
+@external(erlang, "synapse_pg_ffi", "query_rows_list")
+fn ffi_query_rows_list(sql: String, params: List(String)) -> QueryResult
+
 //// A query result: rows, each a list of stringified column values.
 //// ponytail: the FFI returns terms shaped exactly like this record
 //// ({rows, ...} / {failed, ...}), so no Dynamic decoding is needed.
@@ -27,4 +30,10 @@ pub fn start_pool(name: String, config: Dynamic) -> Result(Nil, String) {
 
 pub fn query(sql: String, params: Dynamic) -> QueryResult {
   ffi_query_rows(sql, params)
+}
+
+//// ponytail: stdlib 1.0.3 dynamic.list is broken for >1 element. Use this
+//// for queries with multiple params — takes a plain list of binaries.
+pub fn query_list(sql: String, params: List(String)) -> QueryResult {
+  ffi_query_rows_list(sql, params)
 }

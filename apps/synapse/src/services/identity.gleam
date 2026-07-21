@@ -187,7 +187,7 @@ fn lookup_student(roll: String) -> Result(Option(StudentRow), String) {
        JOIN departments d ON st.department_id = d.id
        JOIN years y ON st.year_id = y.id
       WHERE st.roll_number = $1"
-  case pg.query(sql, dynamic.list([dynamic.string(roll)])) {
+  case pg.query_list(sql, [roll]) {
     pg.Failed(reason) -> Error(reason)
     pg.Rows(rows) ->
       case rows {

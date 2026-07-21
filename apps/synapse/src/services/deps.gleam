@@ -1,7 +1,6 @@
 //// Dependency connectivity checks (Story 1.2, spine AD-4).
 //// Confirms the Gleam app can reach Postgres, Redis, and RabbitMQ.
 
-import gleam/dynamic
 import synapse_pg as pg
 
 @external(erlang, "synapse_deps_ffi", "redis_ping")
@@ -24,7 +23,7 @@ pub fn check_all() -> DepStatus {
 }
 
 fn postgres_status() -> String {
-  case pg.query("SELECT 1", dynamic.list([])) {
+  case pg.query_list("SELECT 1", []) {
     pg.Rows(_) -> "ok"
     pg.Failed(reason) -> "error:" <> reason
   }

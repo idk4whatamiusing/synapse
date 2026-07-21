@@ -296,7 +296,7 @@ fn deps_response() -> Response(Body) {
     <> s.redis
     <> " rabbitmq="
     <> s.rabbitmq
-  case s.postgres == "ok" && s.redis == "ok" && s.rabbitmq == "ok" {
+  case s.postgres == "ok" && s.redis == "ok" {
     True -> ok_response(body)
     False ->
       response.new(503)

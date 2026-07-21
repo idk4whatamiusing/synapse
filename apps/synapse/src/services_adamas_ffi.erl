@@ -62,22 +62,34 @@ portal_login(RegistrationNo, Password) ->
                 {ok, {{_, Code, _}, RespHeaders, RespBody}} ->
                   case Code of
                     302 ->
-                      case extract_session_cookie(RespHeaders) of
-                        {ok, C} -> {ok, C};
-                        error -> {error, <<"no session cookie in redirect">>}
-                      end;
-                    200 ->
-                      case binary:match(RespBody, <<"invalid">>) of
-                        nomatch ->
-                          case binary:match(RespBody, <<"Dashboard">>) of
-                            nomatch -> {error, <<"login failed — still on login page">>};
-                            _ ->
+                      %% Check redirect location — login page = failed, dashboard = success
+                      RedirectLoc = extract_header(RespHeaders, "location"),
+                      case RedirectLoc of
+                        {ok, Loc} ->
+                          case binary:match(Loc, <<"login">>) of
+                            nomatch ->
+                              %% Redirected to dashboard — success
                               case extract_session_cookie(RespHeaders) of
                                 {ok, C} -> {ok, C};
-                                error -> {error, <<"login may have succeeded but no session cookie">>}
-                              end
+                                error -> {error, <<"no session cookie in redirect">>}
+                              end;
+                            _ -> {error, <<"invalid credentials">>}
                           end;
-                        _ -> {error, <<"invalid credentials">>}
+                        error ->
+                          %% No location header — try to get session cookie anyway
+                          case extract_session_cookie(RespHeaders) of
+                            {ok, C} -> {ok, C};
+                            error -> {error, <<"login redirect with no location">>}
+                          end
+                      end;
+                    200 ->
+                      case binary:match(RespBody, <<"Dashboard">>) of
+                        nomatch -> {error, <<"login failed — still on login page">>};
+                        _ ->
+                          case extract_session_cookie(RespHeaders) of
+                            {ok, C} -> {ok, C};
+                            error -> {error, <<"login may have succeeded but no session cookie">>}
+                          end
                       end;
                     _ ->
                       {error, <<"HTTP ", (integer_to_binary(Code))/binary, " from portal">>}
@@ -149,6 +161,14 @@ extract_session_cookie_loop([{_, CookieStr} | Rest]) ->
         _ -> {ok, list_to_binary(string:trim(CookieStr, trailing, ";"))}
       end;
     _ -> {ok, list_to_binary(string:trim(CookieStr, trailing, ";"))}
+  end.
+
+%% Extract a specific header value by name (case-insensitive).
+extract_header(Headers, Name) ->
+  Filtered = [{K, V} || {K, V} <- Headers, string:lowercase(K) =:= Name],
+  case Filtered of
+    [{_, Val} | _] -> {ok, list_to_binary(Val)};
+    [] -> error
   end.
 
 %% Extract student info as a JSON-like string from HTML.

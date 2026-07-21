@@ -6,12 +6,18 @@
 -export([start_pool/2, query_rows/2, query_rows_list/2, default_pool_config/0]).
 
 %% Pool config from environment variables, falling back to dev defaults.
+env_get(Key, Default) ->
+  case os:getenv(Key) of
+    false -> Default;
+    Val -> Val
+  end.
+
 default_pool_config() ->
-  #{host => os:getenv("DB_HOST") orelse "localhost",
-    port => list_to_integer(os:getenv("DB_PORT") orelse "5432"),
-    user => os:getenv("DB_USER") orelse "x",
-    password => os:getenv("DB_PASSWORD") orelse "",
-    database => os:getenv("DB_NAME") orelse "synapse",
+  #{host => env_get("DB_HOST", "localhost"),
+    port => list_to_integer(env_get("DB_PORT", "5432")),
+    user => env_get("DB_USER", "x"),
+    password => env_get("DB_PASSWORD", ""),
+    database => env_get("DB_NAME", "synapse"),
     pool_size => 5}.
 
 start_pool(Name, Config) ->

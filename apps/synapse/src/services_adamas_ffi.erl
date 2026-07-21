@@ -2,7 +2,7 @@
 %% Scrapes the student login portal to authenticate and fetch student info.
 
 -module(services_adamas_ffi).
--export([fetch_csrf_token/0, portal_login/3, fetch_student_info/1]).
+-export([portal_login/2, fetch_student_info/1]).
 
 -define(LOGIN_URL, "https://adamasknowledgecity.ac.in/student/login").
 -define(DASHBOARD_URL, "https://adamasknowledgecity.ac.in/student/dashboard").
@@ -13,13 +13,18 @@ ensure_started() ->
   application:ensure_all_started(inets),
   application:ensure_all_started(ssl).
 
-%% GET the login page and extract the CSRF _token value.
+%% GET the login page and extract the CSRF _token + session cookie.
+%% Returns {ok, {Token, Cookie}} or {error, Reason}.
 fetch_csrf_token() ->
   ensure_started(),
-  case httpc:request(get, {?LOGIN_URL, [{"User-Agent", "Synapse/1.0"}]}, [{ssl, [{verify, verify_none}]}], [{body_format, binary}]) of
-    {ok, {{_, 200, _}, _Headers, Body}} ->
+  case httpc:request(get, {?LOGIN_URL, [{"User-Agent", "Synapse/1.0"}]}, [{ssl, [{verify, verify_none}]}], [{body_format, binary}, {full_result, true}]) of
+    {ok, {{_, 200, _}, Headers, Body}} ->
       case extract_token(Body) of
-        {ok, Token} -> {ok, Token};
+        {ok, Token} ->
+          case extract_session_cookie(Headers) of
+            {ok, Cookie} -> {ok, {Token, Cookie}};
+            error -> {error, <<"no session cookie from login page">>}
+          end;
         error -> {error, <<"csrf token not found">>}
       end;
     {ok, {{_, Code, _}, _, _}} ->
@@ -28,51 +33,64 @@ fetch_csrf_token() ->
       {error, iolist_to_binary(io_lib:format("~p", [Reason]))}
   end.
 
-%% POST credentials to the login page with CSRF token.
+%% Combined login: fetch CSRF token (with session cookie), then POST credentials.
 %% Returns {ok, SessionCookie} on success, {error, Reason} on failure.
-portal_login(Token, RegistrationNo, Password) ->
+portal_login(RegistrationNo, Password) ->
   ensure_started(),
-  Body = "registration_no=" ++ uri_encode(binary_to_list(RegistrationNo))
-    ++ "&password=" ++ uri_encode(binary_to_list(Password))
-    ++ "&_token=" ++ uri_encode(binary_to_list(Token))
-    ++ "&login=login",
-  Headers = [
-    {"User-Agent", "Synapse/1.0"},
-    {"Content-Type", "application/x-www-form-urlencoded"},
-    {"Referer", ?LOGIN_URL},
-    {"Origin", "https://adamasknowledgecity.ac.in"}
-  ],
-  HttpOpts = [{ssl, [{verify, verify_none}]}],
-  Opts = [{body_format, binary}, {full_result, true}],
-  case httpc:request(post, {?LOGIN_URL, Headers, "application/x-www-form-urlencoded", Body}, HttpOpts, Opts) of
-    {ok, {{_, Code, _}, RespHeaders, RespBody}} ->
-      case Code of
-        302 ->
-          %% Successful login — extract session cookie from Set-Cookie headers
-          SessionCookie = extract_session_cookie(RespHeaders),
-          case SessionCookie of
-            {ok, Cookie} -> {ok, Cookie};
-            error -> {error, <<"no session cookie in redirect">>}
-          end;
-        200 ->
-          %% Check if the response contains an error message
-          case binary:match(RespBody, <<"invalid">>) of
-            nomatch ->
-              %% Might still be on login page with no error — check for dashboard redirect indicators
-              case binary:match(RespBody, <<"Dashboard">>) of
-                nomatch -> {error, <<"login failed — still on login page">>};
-                _ ->
-                  SessionCookie = extract_session_cookie(RespHeaders),
-                  case SessionCookie of
-                    {ok, Cookie} -> {ok, Cookie};
-                    error -> {error, <<"login may have succeeded but no session cookie">>}
-                  end
+  %% Step 1: GET login page to get CSRF token + session cookie
+  case httpc:request(get, {?LOGIN_URL, [{"User-Agent", "Synapse/1.0"}]}, [{ssl, [{verify, verify_none}]}], [{body_format, binary}, {full_result, true}]) of
+    {ok, {{_, 200, _}, GetHeaders, Body}} ->
+      case extract_token(Body) of
+        {ok, Token} ->
+          case extract_session_cookie(GetHeaders) of
+            {ok, Cookie} ->
+              %% Step 2: POST credentials with CSRF token + session cookie
+              PostBody = "registration_no=" ++ uri_encode(binary_to_list(RegistrationNo))
+                ++ "&password=" ++ uri_encode(binary_to_list(Password))
+                ++ "&_token=" ++ uri_encode(binary_to_list(Token))
+                ++ "&login=login",
+              PostHeaders = [
+                {"User-Agent", "Synapse/1.0"},
+                {"Content-Type", "application/x-www-form-urlencoded"},
+                {"Referer", ?LOGIN_URL},
+                {"Origin", "https://adamasknowledgecity.ac.in"},
+                {"Cookie", binary_to_list(Cookie)}
+              ],
+              HttpOpts = [{ssl, [{verify, verify_none}]}],
+              Opts = [{body_format, binary}, {full_result, true}],
+              case httpc:request(post, {?LOGIN_URL, PostHeaders, "application/x-www-form-urlencoded", PostBody}, HttpOpts, Opts) of
+                {ok, {{_, Code, _}, RespHeaders, RespBody}} ->
+                  case Code of
+                    302 ->
+                      case extract_session_cookie(RespHeaders) of
+                        {ok, C} -> {ok, C};
+                        error -> {error, <<"no session cookie in redirect">>}
+                      end;
+                    200 ->
+                      case binary:match(RespBody, <<"invalid">>) of
+                        nomatch ->
+                          case binary:match(RespBody, <<"Dashboard">>) of
+                            nomatch -> {error, <<"login failed — still on login page">>};
+                            _ ->
+                              case extract_session_cookie(RespHeaders) of
+                                {ok, C} -> {ok, C};
+                                error -> {error, <<"login may have succeeded but no session cookie">>}
+                              end
+                          end;
+                        _ -> {error, <<"invalid credentials">>}
+                      end;
+                    _ ->
+                      {error, <<"HTTP ", (integer_to_binary(Code))/binary, " from portal">>}
+                  end;
+                {error, Reason} ->
+                  {error, iolist_to_binary(io_lib:format("~p", [Reason]))}
               end;
-            _ -> {error, <<"invalid credentials">>}
+            error -> {error, <<"no session cookie from login page">>}
           end;
-        _ ->
-          {error, <<"HTTP ", (integer_to_binary(Code))/binary, " from portal">>}
+        error -> {error, <<"csrf token not found">>}
       end;
+    {ok, {{_, Code, _}, _, _}} ->
+      {error, <<"HTTP ", (integer_to_binary(Code))/binary>>};
     {error, Reason} ->
       {error, iolist_to_binary(io_lib:format("~p", [Reason]))}
   end.

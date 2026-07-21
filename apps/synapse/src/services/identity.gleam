@@ -43,12 +43,8 @@ fn ffi_redis_del(pool: Red, key: String) -> Result(Nil, String)
 @external(erlang, "synapse_deps_ffi", "random_session_id")
 fn ffi_random_session_id() -> String
 
-@external(erlang, "services_adamas_ffi", "fetch_csrf_token")
-fn ffi_fetch_csrf_token() -> Result(String, String)
-
 @external(erlang, "services_adamas_ffi", "portal_login")
 fn ffi_portal_login(
-  token: String,
   registration_no: String,
   password: String,
 ) -> Result(String, String)
@@ -114,35 +110,29 @@ pub fn portal_login(
   registration_no: String,
   password: String,
 ) -> LoginResult {
-  // Step 1: Fetch CSRF token from login page
-  case ffi_fetch_csrf_token() {
-    Error(reason) -> Rejected("csrf fetch failed: " <> reason)
-    Ok(token) -> {
-      // Step 2: POST credentials to portal
-      case ffi_portal_login(token, registration_no, password) {
-        Error(reason) -> Rejected(reason)
-        Ok(session_cookie) -> {
-          // Step 3: Fetch student info from dashboard
-          case ffi_fetch_student_info(session_cookie) {
-            Error(reason) -> Rejected("could not fetch student info: " <> reason)
-            Ok(student_json) -> {
-              // Step 4: Parse student info and upsert to local DB
-              case parse_student_json(student_json) {
-                Error(reason) -> Rejected("could not parse student info: " <> reason)
-                Ok(info) -> {
-                  upsert_student(registration_no, info)
-                  // Step 5: Create Redis session
-                  let session_id = ffi_random_session_id()
-                  let payload =
-                    ffi_json_encode(
-                      ffi_session_json(session_id, info.school, info.department, info.year),
-                    )
-                  case ffi_redis_setex(pool, session_key(session_id), session_ttl_secs, payload) {
-                    Error(reason) -> Rejected("session store failed: " <> reason)
-                    Ok(Nil) ->
-                      Authed(session_id, info.school, info.department, info.year)
-                  }
-                }
+  // Fetch CSRF token + login in one step
+  case ffi_portal_login(registration_no, password) {
+    Error(reason) -> Rejected(reason)
+    Ok(session_cookie) -> {
+      // Fetch student info from dashboard
+      case ffi_fetch_student_info(session_cookie) {
+        Error(reason) -> Rejected("could not fetch student info: " <> reason)
+        Ok(student_json) -> {
+          // Parse student info and upsert to local DB
+          case parse_student_json(student_json) {
+            Error(reason) -> Rejected("could not parse student info: " <> reason)
+            Ok(info) -> {
+              upsert_student(registration_no, info)
+              // Create Redis session
+              let session_id = ffi_random_session_id()
+              let payload =
+                ffi_json_encode(
+                  ffi_session_json(session_id, info.school, info.department, info.year),
+                )
+              case ffi_redis_setex(pool, session_key(session_id), session_ttl_secs, payload) {
+                Error(reason) -> Rejected("session store failed: " <> reason)
+                Ok(Nil) ->
+                  Authed(session_id, info.school, info.department, info.year)
               }
             }
           }

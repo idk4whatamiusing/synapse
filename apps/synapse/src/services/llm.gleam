@@ -2,8 +2,10 @@
 //// One interface: chat(Provider, messages) -> String.
 //// OpenRouter backend (OpenAI-compatible); Bedrock stub.
 //// Ponytail: OpenRouter first, Bedrock when SigV4 is needed.
+//// FR-9: KB retrieval — search campus FAQ, inject as system context.
 
 import gleam/string
+import services/kb
 
 pub type Provider {
   OpenRouter
@@ -33,6 +35,29 @@ pub fn chat_with_fallback(
     Ok(response) -> Ok(response)
     Error(_) -> chat(fallback, messages)
   }
+}
+
+//// FR-9: KB-augmented chat. Searches campus FAQ, injects context as system
+//// message, then calls LLM. If KB has relevant info, the LLM cites it.
+pub fn chat_with_context(
+  provider: Provider,
+  user_message: String,
+) -> Result(String, String) {
+  let context = case kb.search(user_message) {
+    Ok(entries) -> kb.format_context(entries)
+    Error(_) -> ""
+  }
+  let messages = case context {
+    "" -> [Message(role: "user", content: user_message)]
+    ctx -> [
+      Message(
+        role: "system",
+        content: "You are a helpful campus assistant for Adamas University. Answer based on the provided context when relevant. Be concise and friendly. If you don't know, say so.\n\n" <> ctx,
+      ),
+      Message(role: "user", content: user_message),
+    ]
+  }
+  chat(provider, messages)
 }
 
 fn openrouter_chat(messages: List(Message)) -> Result(String, String) {

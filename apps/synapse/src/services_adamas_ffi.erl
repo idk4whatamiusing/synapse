@@ -17,7 +17,7 @@ ensure_started() ->
 %% Returns {ok, {Token, Cookie}} or {error, Reason}.
 fetch_csrf_token() ->
   ensure_started(),
-  case httpc:request(get, {?LOGIN_URL, [{"User-Agent", "Synapse/1.0"}]}, [{ssl, [{verify, verify_none}]}], [{body_format, binary}, {full_result, true}]) of
+  case httpc:request(get, {?LOGIN_URL, [{"User-Agent", "Synapse/1.0"}]}, [{ssl, [{verify, verify_none}]}, {autoredirect, false}], [{body_format, binary}, {full_result, true}]) of
     {ok, {{_, 200, _}, Headers, Body}} ->
       case extract_token(Body) of
         {ok, Token} ->
@@ -38,7 +38,7 @@ fetch_csrf_token() ->
 portal_login(RegistrationNo, Password) ->
   ensure_started(),
   %% Step 1: GET login page to get CSRF token + session cookie
-  case httpc:request(get, {?LOGIN_URL, [{"User-Agent", "Synapse/1.0"}]}, [{ssl, [{verify, verify_none}]}], [{body_format, binary}, {full_result, true}]) of
+  case httpc:request(get, {?LOGIN_URL, [{"User-Agent", "Synapse/1.0"}]}, [{ssl, [{verify, verify_none}]}, {autoredirect, false}], [{body_format, binary}, {full_result, true}]) of
     {ok, {{_, 200, _}, GetHeaders, Body}} ->
       case extract_token(Body) of
         {ok, Token} ->
@@ -56,7 +56,7 @@ portal_login(RegistrationNo, Password) ->
                 {"Origin", "https://adamasknowledgecity.ac.in"},
                 {"Cookie", binary_to_list(Cookie)}
               ],
-              HttpOpts = [{ssl, [{verify, verify_none}]}],
+              HttpOpts = [{ssl, [{verify, verify_none}]}, {autoredirect, false}],
               Opts = [{body_format, binary}, {full_result, true}],
               case httpc:request(post, {?LOGIN_URL, PostHeaders, "application/x-www-form-urlencoded", PostBody}, HttpOpts, Opts) of
                 {ok, {{_, Code, _}, RespHeaders, RespBody}} ->

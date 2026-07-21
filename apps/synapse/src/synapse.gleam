@@ -14,9 +14,9 @@ import gleam/option.{Some}
 import gleam/result
 import mist
 import synapse_pg as pg
-import data
-import deps
-import identity.{type Red}
+import services/data
+import services/deps
+import services/identity.{type Red}
 
 @external(erlang, "synapse_thoas_ffi", "encode")
 fn ffi_json_encode(term: Dynamic) -> String

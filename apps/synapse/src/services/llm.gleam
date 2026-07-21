@@ -204,8 +204,9 @@ fn build_openrouter_body_with_tools(messages: List(Message)) -> String {
   let tools_section = tools_json()
   "{\"model\":\"meta-llama/llama-3.1-8b-instruct:free\",\"messages\":"
   <> messages_to_json(messages)
-  <> "," <> tools_section
-  <> ",\"max_tokens\":512,\"tools\":" <> tools_section}"
+  <> ",\"max_tokens\":512,"
+  <> tools_section
+  <> "}"
 }
 
 fn tools_json() -> String {

@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import {SafeAreaProvider, useSafeAreaInsets} from 'react-native-safe-area-context';
 
-const GATEWAY_URL = 'http://18.60.43.29:8000';
+const GATEWAY_URL = 'https://debut-invoice-material-put.trycloudflare.com';
 
 type Page = 'landing' | 'login';
 

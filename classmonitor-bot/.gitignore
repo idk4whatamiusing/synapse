@@ -1,0 +1,5 @@
+# Never commit real credentials or runtime state
+config.json
+.cookies.txt
+auto.log
+__pycache__/

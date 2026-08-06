@@ -22,9 +22,26 @@ pub type DepStatus {
 pub fn check_all() -> DepStatus {
   DepStatus(
     postgres: postgres_status(),
-    redis: "ok",
-    rabbitmq: "ok",
+    redis: ffi_redis_ping(env_or("REDIS_HOST", "localhost"), env_int_or("REDIS_PORT", 6379)),
+    rabbitmq: ffi_rabbitmq_reachable(
+      env_or("RABBITMQ_HOST", "localhost"),
+      env_int_or("RABBITMQ_PORT", 5672),
+    ),
   )
+}
+
+fn env_or(name: String, default: String) -> String {
+  case getenv(name) {
+    "" -> default
+    value -> value
+  }
+}
+
+fn env_int_or(name: String, default: Int) -> Int {
+  case getenv_int(name) {
+    0 -> default
+    value -> value
+  }
 }
 
 fn postgres_status() -> String {

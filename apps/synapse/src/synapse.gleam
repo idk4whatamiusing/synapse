@@ -127,7 +127,7 @@ fn login_response(
               |> response.set_header(
                 "Set-Cookie",
                 "synapse_session=" <> session_id
-                  <> "; Path=/; HttpOnly; Max-Age=604800",
+                  <> "; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=604800",
               )
           }
       }
@@ -296,7 +296,7 @@ fn deps_response() -> Response(Body) {
     <> s.redis
     <> " rabbitmq="
     <> s.rabbitmq
-  case s.postgres == "ok" && s.redis == "ok" {
+  case s.postgres == "ok" && s.redis == "ok" && s.rabbitmq == "ok" {
     True -> ok_response(body)
     False ->
       response.new(503)

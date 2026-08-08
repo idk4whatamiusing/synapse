@@ -1,0 +1,7 @@
+{
+    "username": "YOUR USERNAME HERE",
+    "password": "YOUR PASSWORD HERE",
+    "grace_minutes": 4,
+    "check_seconds": 180,
+    "end_time": "18:45"
+}

@@ -1,9 +1,13 @@
 // src/index.js - Cloudflare Workers API Gateway for Synapse
 // This worker routes requests between Cloudflare and the Gleam backend
 
-// Configuration from environment variables
-const BACKEND_URL = 'http://18.60.43.29:8000';
-const ENVIRONMENT = 'production';
+// Configuration from the worker environment (wrangler.toml [vars] / secrets).
+// Falls back to the current backend address when nothing is configured.
+const BACKEND_URL =
+  (typeof globalThis !== 'undefined' && globalThis.BACKEND_URL) ||
+  'http://18.60.43.29:8000';
+const ENVIRONMENT =
+  (typeof globalThis !== 'undefined' && globalThis.ENVIRONMENT) || 'production';
 
 // Session management middleware
 function parseSessionCookie(cookieHeader) {
@@ -143,7 +147,7 @@ async function handleRequest(request) {
       headers: {
         'Access-Control-Allow-Origin': '*',
         'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With',
         'Access-Control-Max-Age': '86400'
       }
     });

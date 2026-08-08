@@ -11,8 +11,7 @@ import {
   View,
 } from 'react-native';
 import {SafeAreaProvider, useSafeAreaInsets} from 'react-native-safe-area-context';
-
-const GATEWAY_URL = 'https://debut-invoice-material-put.trycloudflare.com';
+import {GATEWAY_URL} from './src/services/api';
 
 type Page = 'landing' | 'login';
 
